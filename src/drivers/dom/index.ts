@@ -93,7 +93,7 @@ const helpers = <Root extends Element>(source: Source<Root>) => {
 
 export const driver =
 	(selector: string): DomDriver =>
-	(source: Source<any>) => {
+	(source) => {
 		const element = document.querySelector(selector)!;
 
 		render(element)(source);
