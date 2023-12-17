@@ -31,6 +31,7 @@ export { flatMap } from "~/streams/transformers/flatMap";
 export { fold } from "~/streams/transformers/fold";
 export { map } from "~/streams/transformers/map";
 export { start } from "~/streams/transformers/start";
+export { takeWhile } from "~/streams/transformers/takeWhile";
 export { tap } from "~/streams/transformers/tap";
 
 export { pipe } from "~/streams/util/pipe";
