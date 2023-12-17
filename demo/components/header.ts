@@ -1,8 +1,8 @@
-import { App } from "~/lifecycle/run";
-import { Drivers } from "..";
-import { of } from "~/streams/sources/of";
-import { div } from "~/drivers/dom/elements";
 import { css } from "@littlethings/css";
+
+import * as neu from "~/index";
+
+import { Drivers } from "..";
 
 const HeaderClass = css({
 	display: "flex",
@@ -21,12 +21,12 @@ const HeaderRightClass = css({
 	flexGrow: "1",
 });
 
-export const Header: App<Drivers> = ({ dom }) => {
+export const Header: neu.App<Drivers> = ({ dom }) => {
 	return {
-		dom: of(
-			div({ class: HeaderClass }, [
-				div({ class: HeaderLeftClass }, ["Left"]),
-				div({ class: HeaderRightClass }, ["Right"]),
+		dom: neu.of(
+			neu.dom.div({ class: HeaderClass }, [
+				neu.dom.div({ class: HeaderLeftClass }, ["Left"]),
+				neu.dom.div({ class: HeaderRightClass }, ["Right"]),
 			]),
 		),
 	};

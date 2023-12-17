@@ -56,7 +56,7 @@ const helpers = (
 		},
 });
 
-export const state =
+export const driver =
 	(initial = {}) =>
 	(source: Source<any>) => {
 		const state = new Map<string, any>(Object.entries(initial));

@@ -91,7 +91,7 @@ const helpers = <Root extends Element>(source: Source<Root>) => {
 	} as const;
 };
 
-export const dom =
+export const driver =
 	(selector: string): DomDriver =>
 	(source: Source<any>) => {
 		const element = document.querySelector(selector)!;
