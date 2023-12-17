@@ -1,7 +1,9 @@
 import { Signal, Source, Talkback } from "../interface";
 
 export const merge =
-	(...sources: Array<Source<any, any, any>>): Source<any, any, any> =>
+	<Value, EI = unknown, EO = unknown>(
+		...sources: Array<Source<Value, EI, EO>>
+	): Source<Value, EI, EO> =>
 	(type, sink) => {
 		if (type !== Signal.Start) {
 			return;
@@ -11,12 +13,12 @@ export const merge =
 		let started = 0;
 		let isDone = false;
 
-		const talkbacks: Array<Talkback | null> = Array.from(
+		const talkbacks: Array<Talkback<EO> | null> = Array.from(
 			{ length: sources.length },
 			() => null,
 		);
 
-		const talkback: Talkback = (type, data) => {
+		const talkback: Talkback<EO> = (type, data) => {
 			if (type === Signal.End) {
 				isDone = true;
 				for (const talkback of talkbacks) {

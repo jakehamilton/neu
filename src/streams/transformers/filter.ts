@@ -1,9 +1,7 @@
 import { Signal, Transformer } from "../interface";
 
 export const filter =
-	<Input, Error>(
-		fn: (value: Input) => boolean,
-	): Transformer<Input, Input, Error> =>
+	<Input, Output>(fn: (value: Input) => boolean): Transformer<Input, Output> =>
 	(source) =>
 	(type, sink) => {
 		if (type !== Signal.Start) {
@@ -11,14 +9,12 @@ export const filter =
 		}
 
 		source(Signal.Start, (type, data) => {
-			// TODO: This is nonsense caused by TypeScript. We can safely call this function, but it refuses to
-			// type check properly.
 			if (type === Signal.Start) {
 				sink(Signal.Start, data);
 			} else if (type === Signal.End) {
 				sink(Signal.End, data);
 			} else if (fn(data)) {
-				sink(Signal.Data, data);
+				sink(Signal.Data, data as unknown as Output);
 			}
 		});
 	};

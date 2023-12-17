@@ -1,47 +1,27 @@
 import { Driver } from "../../lifecycle/run";
 import { Signal, Sink, Source, Talkback } from "../../streams/interface";
-import { each } from "../../streams/sinks/each";
 import { of } from "../../streams/sources/of";
-import { fold } from "../../streams/transformers/fold";
-import { map } from "../../streams/transformers/map";
 import { pipe } from "../../streams/util/pipe";
-import { share } from "../../streams/util/share";
 import { VNode } from "./elements";
 import { render } from "./render";
 
 export type DomDriver = Driver<VNode, unknown, ReturnType<typeof helpers>>;
 
-const helpers = (source: Source<any, any, any>) => {
+const helpers = <Root extends Element>(source: Source<Root>) => {
 	return {
-		share: () => {
-			const stream = share(source);
-
-			return Object.assign(stream, helpers(stream));
-		},
-		map: <Input, Output>(fn: (input: Input) => Output) => {
-			const stream = map(fn)(source);
-
-			return Object.assign(stream, helpers(stream));
-		},
-		each: <Fn extends (...args: any[]) => {}>(fn: Fn) => {
-			each(fn)(source);
-		},
-		fold: <Value, Accumulator>(
-			fn: (accumulator: Accumulator, value: Value) => Accumulator,
-			initial: Accumulator,
-		) => {
-			const stream = fold(fn, initial)(source);
-
-			return Object.assign(stream, helpers(stream));
-		},
-		select: (selector: string) => {
-			let element: Element | null = null;
-			let sinkTalkback: Sink<Element | null> | null = null;
-			const observer = new MutationObserver((mutations) => {
-				sinkTalkback?.(Signal.Data, element?.querySelector(selector) ?? null);
+		select: <T extends Element>(
+			selector: string,
+		): Source<T | null, unknown, unknown> => {
+			let element: Root | null = null;
+			let sinkTalkback: Sink<T | null, unknown, unknown> | null = null;
+			const observer = new MutationObserver((_mutations) => {
+				sinkTalkback?.(
+					Signal.Data,
+					(element?.querySelector(selector) ?? null) as T | null,
+				);
 			});
 
-			const stream = pipe(source, (s): Source<Element | null, any, any> => {
+			const stream = pipe(source, (s): Source<T | null, any, any> => {
 				s(Signal.Start, (type, data) => {
 					if (type === Signal.Start) {
 					} else if (type === Signal.Data) {
@@ -71,10 +51,10 @@ const helpers = (source: Source<any, any, any>) => {
 				};
 			});
 
-			return Object.assign(stream, helpers(stream));
+			return stream;
 		},
 		event: (name: string) => {
-			const stream = pipe(source, (s): Source<Event, any, any> => {
+			const stream = pipe(source, (s): Source<Event> => {
 				let sourceTalkback: Talkback | null = null;
 				let sinkTalkback: Sink<Event> | null = null;
 
@@ -98,7 +78,6 @@ const helpers = (source: Source<any, any, any>) => {
 
 				return (type, sink) => {
 					if (type === Signal.Start) {
-						// @ts-expect-error
 						sinkTalkback = sink;
 					} else if (type === Signal.End) {
 						sourceTalkback?.(Signal.End);
@@ -107,7 +86,7 @@ const helpers = (source: Source<any, any, any>) => {
 				};
 			});
 
-			return Object.assign(stream, helpers(stream));
+			return stream;
 		},
 	} as const;
 };

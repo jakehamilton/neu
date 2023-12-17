@@ -18,7 +18,7 @@ export enum Signal {
  * - Request more data
  * - Abort the stream, optionally with an error
  */
-export type Talkback<E = never> = (
+export type Talkback<E = unknown> = (
 	signal: Signal.Data | Signal.End,
 	error?: E | undefined,
 ) => void;
@@ -35,7 +35,7 @@ export type SinkArgs<A, EI, EO> =
  * - It can recieve errors of the `EI` type
  * - It can abort with errors of the `EO` type
  */
-export type Sink<A, EI = unknown, EO = never> = (
+export type Sink<A, EI = unknown, EO = unknown> = (
 	...op: SinkArgs<A, EI, EO>
 ) => void;
 
@@ -54,9 +54,11 @@ export type Source<A, EI = unknown, EO = unknown> = (
 	...op: SourceArgs<A, EI, EO>
 ) => void;
 
+export type Stream<A, EI = unknown, EO = unknown> = Source<A, EI, EO>;
+
 export type Transformer<Input, Output, Error = unknown> = (
-	input: Source<Input, Error, Error>,
-) => Source<Output, Error, Error>;
+	input: Source<Input, Error>,
+) => Source<Output, Error>;
 
 export type Operator<Input, Output, Params extends Array<any> = Array<any>> = (
 	...args: Params
@@ -68,3 +70,7 @@ export type UnwrapSource<T extends Source<any>> = T extends Source<infer Data>
 export type UnwrapSink<T extends Sink<any>> = T extends Sink<infer Data>
 	? Data
 	: never;
+export type UnwrapTransformer<T extends Transformer<any, any, any>> =
+	T extends Transformer<infer Input, infer Output, infer _Error>
+		? { input: Input; output: Output }
+		: never;

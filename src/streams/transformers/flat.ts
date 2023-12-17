@@ -1,22 +1,29 @@
-import { Signal, Source, Talkback } from "../interface";
+import { Signal, Source, Talkback, Transformer } from "../interface";
 
 export const flat =
-	<Value>(source: Source<Source<Value>>): Source<Value, any, any> =>
+	<Value>(): Transformer<Value | Source<Value>, Value> =>
+	(source) =>
 	(type, sink) => {
 		if (type !== Signal.Start) {
 			return;
 		}
 
-		let talkback: Talkback | null = null;
-		let innerTalkback: Talkback | null = null;
+		let talkback: Talkback<unknown> | null = null;
+		let innerTalkback: Talkback<unknown> | null = null;
 
 		source(Signal.Start, (type, data) => {
 			if (type === Signal.Start) {
 				talkback = data;
 			} else if (type === Signal.Data) {
-				const innerSource = data;
-
 				innerTalkback?.(Signal.End);
+
+				if (typeof data !== "function") {
+					sink(Signal.Data, data);
+
+					return;
+				}
+
+				const innerSource = data as Source<Value>;
 
 				innerSource(Signal.Start, (type, data) => {
 					if (type === Signal.Start) {
@@ -32,7 +39,7 @@ export const flat =
 				});
 			} else if (type === Signal.End) {
 				talkback = null;
-				innerTalkback?.(Signal.End);
+				innerTalkback?.(Signal.End, data);
 			}
 		});
 	};

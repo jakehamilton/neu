@@ -34,8 +34,6 @@ export const share = <Data, EI, EO>(
 					sink(Signal.Start, sinkTalkback);
 				} else {
 					for (const sink of sinks.slice()) {
-						// TODO: This is nonsense caused by TypeScript. We can safely call this function, but it refuses to
-						// type check properly.
 						if (type === Signal.Data) {
 							sink(type, data);
 						} else {

@@ -9,6 +9,7 @@ import { App, run } from "~/lifecycle/run";
 import { event } from "~/streams/sources/event";
 import { merge } from "~/streams/sources/merge";
 import { of } from "~/streams/sources/of";
+import { filter } from "~/streams/transformers/filter";
 import { flatMap } from "~/streams/transformers/flatMap";
 import { fold } from "~/streams/transformers/fold";
 import { map } from "~/streams/transformers/map";
@@ -17,6 +18,7 @@ import { pipe } from "~/streams/util/pipe";
 import { Header } from "./components/header";
 
 const AppClass = css({});
+
 const ButtonClass = css({
 	background: "pink",
 });
@@ -27,7 +29,8 @@ const App: App<Drivers> = ({ dom, state }) => {
 	const clicks = (selector: string) =>
 		pipe(
 			dom.select(selector),
-			flatMap(event("click")),
+			filter<Element | null, Element>((x) => x !== null),
+			flatMap<Element, Event>(event("click")),
 			fold((acc) => acc + 1, 0),
 			start(0),
 		);

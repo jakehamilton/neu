@@ -8,7 +8,7 @@ const empty = (element: Element) => {
 	}
 };
 
-export const create = <T extends Element>(root: T, node: VNode) => {
+export const create = <T extends Element>(_root: T, node: VNode) => {
 	if (node === undefined || node === null) {
 		return { element: document.createComment("neu:node"), unsubscribes: [] };
 	}
@@ -46,6 +46,11 @@ export const create = <T extends Element>(root: T, node: VNode) => {
 
 			const unsubscribe = subscribe<VNode, any>((value) => {
 				const result = create(element, value);
+
+				for (const unsubscribe of childUnsubscribes) {
+					unsubscribe();
+				}
+
 				childElement.parentNode?.replaceChild(result.element, childElement);
 				childElement = result.element;
 				childUnsubscribes = result.unsubscribes;
@@ -112,6 +117,11 @@ export const write = <T extends Element>(
 
 			const unsubscribe = subscribe<VNode, any>((value) => {
 				const result = create(element, value);
+
+				for (const unsubscribe of childUnsubscribes) {
+					unsubscribe();
+				}
+
 				childElement.parentNode?.replaceChild(result.element, childElement);
 				childElement = result.element;
 				childUnsubscribes = result.unsubscribes;

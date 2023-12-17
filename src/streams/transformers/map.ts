@@ -1,10 +1,8 @@
 import { Signal, Source, Transformer } from "../interface";
 
 export const map =
-	<Input, Output, Error>(
-		fn: (value: Input) => Output,
-	): Transformer<Input, Output, Error> =>
-	(source: Source<Input, Error, any>) =>
+	<Input, Output>(fn: (value: Input) => Output): Transformer<Input, Output> =>
+	(source) =>
 	(type, sink) => {
 		if (type !== Signal.Start) {
 			return;

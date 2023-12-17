@@ -3,9 +3,9 @@ import { Signal, Source, Talkback } from "../interface";
 export type Dispose = () => void;
 
 export const subscribe =
-	<Value, Error>(fn: (value: Value) => void) =>
-	(source: Source<Value, Error, Error>): Dispose => {
-		let talkback: Talkback | null = null;
+	<Value, EI = unknown, EO = unknown>(fn: (value: Value) => void) =>
+	(source: Source<Value, EI, EO>): Dispose => {
+		let talkback: Talkback<EO> | null = null;
 
 		source(Signal.Start, (type, data) => {
 			if (type === Signal.Start) {

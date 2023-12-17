@@ -1,7 +1,7 @@
 import { Signal, Talkback, Transformer } from "../interface";
 
 export const start =
-	<Value>(...values: Array<Value>): Transformer<Value, Value, any> =>
+	<Value>(...values: Array<Value>): Transformer<Value, Value> =>
 	(source) =>
 	(type, sink) => {
 		if (type !== Signal.Start) {

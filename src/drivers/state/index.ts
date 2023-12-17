@@ -1,14 +1,14 @@
 import { Driver } from "~/lifecycle/run";
-import { Signal, Sink, Source, Talkback } from "../../streams/interface";
 import { tap } from "~/streams/transformers/tap";
 import { pipe } from "~/streams/util/pipe";
+import { Signal, Source } from "../../streams/interface";
 
 export type State = any;
 
 export type StateDriver = Driver<State, unknown, ReturnType<typeof helpers>>;
 
 const helpers = (
-	store: Source<any>,
+	_store: Source<any>,
 	state: Map<string, any>,
 	listeners: Map<string, Array<(value: any) => void>>,
 ) => ({

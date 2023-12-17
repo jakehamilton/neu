@@ -4,7 +4,7 @@ export const tap =
 	<Value, Error>(
 		fn: (value: Value) => void,
 	): Transformer<Value, Value, Error> =>
-	(source: Source<Value, Error, Error>) =>
+	(source) =>
 	(type, sink) => {
 		if (type !== Signal.Start) {
 			return;

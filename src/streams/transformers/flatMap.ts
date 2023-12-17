@@ -4,8 +4,13 @@ import { flat } from "./flat";
 import { map } from "./map";
 
 export const flatMap =
-	<Input, Output, Error>(
-		fn: (value: Input) => Output,
-	): Transformer<Input, Output, Error> =>
-	(source: Source<Input, Error, any>) =>
-		pipe(source, map(fn), flat);
+	<Input, Output>(
+		fn: (value: Input) => Output | Source<Output>,
+	): Transformer<Input, Output> =>
+	(source) => {
+		return pipe(
+			source,
+			map<Input, Output | Source<Output>>(fn),
+			flat<Output>(),
+		);
+	};

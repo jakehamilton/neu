@@ -7,11 +7,15 @@ export const proxy = <Data>() => {
 
 	const sink: Sink<Data> = (type, data) => {
 		if (downstream) {
-			// @ts-expect-error
-			downstream(type, data);
+			if (type === Signal.Start) {
+				downstream(type, data);
+			} else if (type === Signal.Data) {
+				downstream(type, data);
+			} else if (type === Signal.End) {
+				downstream(type, data);
+			}
 		} else {
-			// @ts-expect-error
-			buffer.push([type, data]);
+			buffer.push([type, data] as SinkArgs<Data, unknown, unknown>);
 		}
 	};
 
@@ -21,8 +25,13 @@ export const proxy = <Data>() => {
 
 			if (buffer.length > 0) {
 				for (const [t, d] of buffer.slice()) {
-					// @ts-expect-error
-					downstream(t, d);
+					if (t === Signal.Start) {
+						downstream(t, d);
+					} else if (t === Signal.Data) {
+						downstream(t, d);
+					} else if (t === Signal.End) {
+						downstream(t, d);
+					}
 				}
 
 				buffer = [];
