@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"moduleResolution": "node",
+		"strict": true,
+		"declaration": true,
+		"target": "es6",
+		"baseUrl": ".",
+		"lib": [
+			"dom",
+			"es2017"
+		],
+		"paths": {
+			"~/*": [
+				"src/*"
+			]
+		}
+	},
+	"include": [
+		"src/**/*",
+		"demo/**/*"
+	]
+}
