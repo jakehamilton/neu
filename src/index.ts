@@ -5,6 +5,9 @@ import * as stateDriver from "~/drivers/state";
 
 export type DomDriver = domDriver.DomDriver;
 
+export type VNode = elements.VNode;
+export type VNodeStream = elements.VNodeStream;
+
 export const dom = {
 	...elements,
 	driver: domDriver.driver,

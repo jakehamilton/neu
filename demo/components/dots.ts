@@ -66,7 +66,7 @@ export const Dots: neu.App<Drivers, {}, Props> = (
 					}px) translateX(-${window.innerWidth / 2}px) translateX(${
 						invert ? "-" : ""
 					}${offset * speed}px) translateY(${
-						sine ? Math.sin((offset + index * 5) * 0.02) * DOT_DIAMETER : 0
+						sine ? Math.sin((offset / 8 + index * 5) * 0.05) * DOT_DIAMETER : 0
 					}px)`,
 				};
 			}),

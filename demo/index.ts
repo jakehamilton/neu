@@ -11,6 +11,7 @@ import { Header } from "./components/header";
 import { Hero } from "./components/hero";
 import { Dots } from "./components/dots";
 import { Callout } from "./components/callout";
+import { Link } from "./components/link";
 
 export type Theme = {
 	accent: {
@@ -38,6 +39,9 @@ const CalloutsClass = css({
 	flexDirection: "column",
 	gap: "6rem",
 	padding: "4rem 0",
+	paddingBottom: "6rem",
+	margin: "0 auto",
+	maxWidth: "60rem",
 });
 
 export type Drivers = {
@@ -97,8 +101,19 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 								{ dom, state, theme },
 								{
 									title: "dynamic",
-									description:
-										"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in eros vitae sapien ultricies aliquam. Donec auctor, eros quis tincidunt aliquam, nunc nulla facilisis lectus, a ultricies leo lorem eu nunc.",
+									description: neu.dom.span([
+										"React in real-time to users, not the other way around. Neu is built on ",
+										Link(
+											{ dom, state, theme },
+											{
+												text: "Callbags",
+												href: "https://github.com/callbag/callbag",
+												target: "_blank",
+												rel: "noopener noreferrer",
+											},
+										).dom,
+										" to enable highly reponsive, reactive applications.",
+									]),
 								},
 							).dom,
 						]),
@@ -107,8 +122,29 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 								{ dom, state, theme },
 								{
 									title: "familiar",
-									description:
-										"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in eros vitae sapien ultricies aliquam. Donec auctor, eros quis tincidunt aliquam, nunc nulla facilisis lectus, a ultricies leo lorem eu nunc.",
+									description: neu.dom.span([
+										"Build applications like you already know and love. Neu applications are made up of components that are mapped to the DOM just like ",
+										Link(
+											{ dom, state, theme },
+											{
+												text: "React",
+												href: "https://reactjs.org/",
+												target: "_blank",
+												rel: "noopener noreferrer",
+											},
+										).dom,
+										" and stream data like ",
+										Link(
+											{ dom, state, theme },
+											{
+												text: "SolidJS",
+												href: "https://www.solidjs.com/",
+												target: "_blank",
+												rel: "noopener noreferrer",
+											},
+										).dom,
+										".",
+									]),
 									invert: true,
 								},
 							).dom,
@@ -119,7 +155,7 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 								{
 									title: "prepared",
 									description:
-										"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in eros vitae sapien ultricies aliquam. Donec auctor, eros quis tincidunt aliquam, nunc nulla facilisis lectus, a ultricies leo lorem eu nunc.",
+										"One dependency from start to finish. Neu provides all of the utilities needed to build your application. From stream primitives to components to state to components, Neu has you covered.",
 								},
 							).dom,
 						]),
@@ -128,8 +164,19 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 								{ dom, state, theme },
 								{
 									title: "open",
-									description:
-										"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in eros vitae sapien ultricies aliquam. Donec auctor, eros quis tincidunt aliquam, nunc nulla facilisis lectus, a ultricies leo lorem eu nunc.",
+									description: neu.dom.span([
+										"Free to the world, free to you. Neu is Open Source from day one so you can focus on building instead of bureaucracy. ",
+										Link(
+											{ dom, state, theme },
+											{
+												text: "Help us build a better web",
+												href: "https://github.com/jakehamilton/neu",
+												target: "_blank",
+												re: "noopener noreferrer",
+											},
+										).dom,
+										".",
+									]),
 									invert: true,
 								},
 							).dom,

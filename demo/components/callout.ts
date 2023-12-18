@@ -1,12 +1,11 @@
 import { css } from "@littlethings/css";
 import { Drivers, Theme } from "demo";
 
-import { VNode, VNodeStream } from "~/drivers/dom/elements";
 import * as neu from "~/index";
 
 type Props = {
-	title: VNode | VNodeStream;
-	description: VNode | VNodeStream;
+	title: neu.VNode | neu.VNodeStream;
+	description: neu.VNode | neu.VNodeStream;
 	invert?: boolean;
 };
 
