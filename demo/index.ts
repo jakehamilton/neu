@@ -12,7 +12,7 @@ import { Hero } from "./components/hero";
 
 export type Theme = {
 	accent: {
-		text: string;
+		foreground: string;
 		background: string;
 	};
 	foreground: {

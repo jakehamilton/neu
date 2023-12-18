@@ -14,6 +14,7 @@ const HeaderClass = (theme: Theme) =>
 		height: "3rem",
 		padding: "0 1rem",
 		background: theme.background.dark,
+		transition: "background 0.25s ease",
 	});
 
 const HeaderLeftClass = css({
@@ -22,7 +23,8 @@ const HeaderLeftClass = css({
 });
 
 const LeftTitleClass = css({
-	fontSize: "1.5rem",
+	fontSize: "1.25rem",
+	fontWeight: "bold",
 	fontFamily: "Ysabeau SC",
 });
 
@@ -44,21 +46,15 @@ export const Header: neu.App<Drivers> = ({ dom, theme }) => {
 	const title$ = neu.pipe(
 		isScrolled$,
 		neu.map((isScrolled: boolean) =>
-			isScrolled ? "the neu web" : "welcome to",
-		),
-	);
-
-	const background$ = neu.pipe(
-		isScrolled$,
-		neu.map((isScrolled: boolean) =>
-			isScrolled ? theme.background.dark : "pink",
+			isScrolled ? "THE NEU WEB" : "WELCOME TO",
 		),
 	);
 
 	const style$ = neu.pipe(
-		background$,
-		neu.map((background: string) => ({
-			background,
+		isScrolled$,
+		neu.map((isScrolled: boolean) => ({
+			color: isScrolled ? theme.accent.foreground : theme.foreground.normal,
+			background: isScrolled ? theme.background.normal : "transparent",
 		})),
 	);
 
@@ -66,7 +62,7 @@ export const Header: neu.App<Drivers> = ({ dom, theme }) => {
 		dom: neu.of(
 			neu.dom.div({ class: HeaderClass(theme), style: style$ }, [
 				neu.dom.div({ class: HeaderLeftClass }, [
-					neu.dom.h2(
+					neu.dom.h1(
 						{
 							class: LeftTitleClass,
 						},
