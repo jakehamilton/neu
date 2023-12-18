@@ -1,6 +1,6 @@
 import { Source } from "../../streams/interface";
 
-export type VNodeChildren = Array<VNode | VNodeStream>;
+export type VNodeChildren = Array<VNode | VNodeStream | VNodeChildren>;
 
 export type VNodeElement = {
 	type: string;

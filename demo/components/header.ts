@@ -15,6 +15,7 @@ const HeaderClass = (theme: Theme) =>
 		padding: "0 1rem",
 		background: theme.background.dark,
 		transition: "background 0.25s ease",
+		overflow: "hidden",
 	});
 
 const HeaderLeftClass = css({
@@ -27,6 +28,12 @@ const LeftTitleClass = css({
 	fontWeight: "bold",
 	fontFamily: "Ysabeau SC",
 });
+
+const NeuClass = (theme: Theme) =>
+	css({
+		color: theme.accent.background,
+		textShadow: `0 0 2.5rem ${theme.accent.background}`,
+	});
 
 const HeaderRightClass = css({
 	display: "flex",
@@ -46,7 +53,13 @@ export const Header: neu.App<Drivers> = ({ dom, theme }) => {
 	const title$ = neu.pipe(
 		isScrolled$,
 		neu.map((isScrolled: boolean) =>
-			isScrolled ? "THE NEU WEB" : "WELCOME TO",
+			isScrolled
+				? neu.dom.span([
+						"THE ",
+						neu.dom.span({ class: NeuClass(theme) }, "NEU"),
+						" WEB",
+					])
+				: "WELCOME TO",
 		),
 	);
 

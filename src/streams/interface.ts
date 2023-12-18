@@ -43,7 +43,6 @@ export type SourceArgs<A, EI, EO> =
 	| [signal: Signal.Start, sink: Sink<A, EI, EO>]
 	| [signal: Signal.End, error: EI | undefined];
 
-// TODO: Type all Source instances with two args unless they explicitly need the third...
 /**
  * A `Source` produces data
  *

@@ -1,20 +1,20 @@
 import { Signal, Source } from "../interface";
 
-export const interval =
+export const frames =
 	(period: number): Source<number> =>
 	(type, sink) => {
 		if (type !== Signal.Start) return;
 
 		let i = 0;
-		let id: ReturnType<typeof setInterval>;
+		let id: ReturnType<typeof requestAnimationFrame>;
 
 		sink(Signal.Start, (type) => {
-			if (type === Signal.End && id) {
-				clearInterval(id);
+			if (type === Signal.End) {
+				cancelAnimationFrame(id);
 			}
 		});
 
-		id = setInterval(() => {
+		id = requestAnimationFrame(() => {
 			sink(Signal.Data, i++);
-		}, period);
+		});
 	};

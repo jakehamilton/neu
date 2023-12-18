@@ -18,6 +18,8 @@ export const state = {
 
 export * from "~/lifecycle/run";
 
+export * from "~/streams/interface";
+
 export { each } from "~/streams/sinks/each";
 export { subscribe } from "~/streams/sinks/subscribe";
 

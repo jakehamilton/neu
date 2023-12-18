@@ -33,7 +33,14 @@ export type AnyDrivers = {
 	[key: string]: AnyDriver;
 };
 
-export type App<Drivers extends AnyDrivers> = (sources: {
+export type AppSinks = {
+	[key: string]: Source<any>;
+};
+
+export type App<
+	Drivers extends AnyDrivers,
+	Sinks extends AppSinks = {},
+> = (sources: {
 	[key in keyof Drivers]: Drivers[key] extends Driver<any, any, infer Return>
 		? Return
 		: ReturnType<Drivers[key]>;
@@ -45,7 +52,7 @@ export type App<Drivers extends AnyDrivers> = (sources: {
 	>
 		? Source<Value, Error, any>
 		: Source<any, any>;
-};
+} & Sinks;
 
 export const run = <Drivers extends AnyDrivers>({
 	app,
