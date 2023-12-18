@@ -1,4 +1,4 @@
-import { Signal, Source } from "../interface";
+import { Signal, Source } from "~/streams/interface";
 
 export const each =
 	<Input, EI = unknown, EO = unknown>(fn: (value: Input) => void) =>

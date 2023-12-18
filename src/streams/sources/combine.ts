@@ -1,4 +1,4 @@
-import { Signal, Source, Talkback, UnwrapSource } from "../interface";
+import { Signal, Source, Talkback, UnwrapSource } from "~/streams/interface";
 
 const unique = Symbol("unique");
 

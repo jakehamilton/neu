@@ -1,4 +1,4 @@
-import { Signal, Source, Talkback, UnwrapSource } from "../interface";
+import { Signal, Source, Talkback, UnwrapSource } from "~/streams/interface";
 import { event } from "./event";
 
 export function merge<S1 extends Source<any, any, any>>(

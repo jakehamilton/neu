@@ -1,7 +1,7 @@
-import { Source, Transformer } from "../interface";
-import { pipe } from "../util/pipe";
-import { flat } from "./flat";
-import { map } from "./map";
+import { Source, Transformer } from "~/streams/interface";
+import { pipe } from "~/streams/util/pipe";
+import { flat } from "~/streams/transformers/flat";
+import { map } from "~/streams/transformers/map";
 
 export const flatMap =
 	<Input, Output>(

@@ -1,4 +1,4 @@
-import { Signal, Talkback, Transformer } from "../interface";
+import { Signal, Talkback, Transformer } from "~/streams/interface";
 
 export const start =
 	<Value>(...values: Array<Value>): Transformer<Value, Value> =>

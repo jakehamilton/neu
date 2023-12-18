@@ -1,7 +1,7 @@
 import { Driver } from "~/lifecycle/run";
 import { tap } from "~/streams/transformers/tap";
 import { pipe } from "~/streams/util/pipe";
-import { Signal, Source, Transformer } from "../../streams/interface";
+import { Signal, Source, Transformer } from "~/streams/interface";
 
 export type State = any;
 

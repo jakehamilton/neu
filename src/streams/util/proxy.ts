@@ -1,4 +1,4 @@
-import { Signal, Sink, SinkArgs, Source } from "../interface";
+import { Signal, Sink, SinkArgs, Source } from "~/streams/interface";
 
 export const proxy = <Data>() => {
 	let buffer: Array<SinkArgs<Data, unknown, unknown>> = [];

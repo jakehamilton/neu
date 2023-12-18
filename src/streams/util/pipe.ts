@@ -3,7 +3,7 @@ import {
 	Transformer,
 	UnwrapSource,
 	UnwrapTransformer,
-} from "../interface";
+} from "~/streams/interface";
 
 export function pipe<S extends Source<any, any, any>>(source: S): S;
 export function pipe<

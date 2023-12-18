@@ -1,4 +1,4 @@
-import { Signal, Transformer } from "../interface";
+import { Signal, Transformer } from "~/streams/interface";
 
 const empty = Symbol("empty");
 

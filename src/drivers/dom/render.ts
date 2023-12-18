@@ -1,5 +1,6 @@
-import { Signal, Source } from "../../streams/interface";
-import { Dispose, subscribe } from "../../streams/sinks/subscribe";
+import { Signal, Source } from "~/streams/interface";
+import { Dispose, subscribe } from "~/streams/sinks/subscribe";
+
 import { VNode } from "./elements";
 
 const empty = (element: Element) => {

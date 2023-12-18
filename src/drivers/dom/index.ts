@@ -1,7 +1,8 @@
-import { Driver } from "../../lifecycle/run";
-import { Signal, Sink, Source, Talkback } from "../../streams/interface";
-import { of } from "../../streams/sources/of";
-import { pipe } from "../../streams/util/pipe";
+import { Driver } from "~/lifecycle/run";
+import { Signal, Sink, Source, Talkback } from "~/streams/interface";
+import { of } from "~/streams/sources/of";
+import { pipe } from "~/streams/util/pipe";
+
 import { VNode } from "./elements";
 import { render } from "./render";
 

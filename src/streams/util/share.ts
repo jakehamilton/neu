@@ -1,4 +1,4 @@
-import { Signal, Sink, Source, Talkback } from "../interface";
+import { Signal, Sink, Source, Talkback } from "~/streams/interface";
 
 export const share = <Data, EI, EO>(
 	source: Source<Data, EI, EO>,

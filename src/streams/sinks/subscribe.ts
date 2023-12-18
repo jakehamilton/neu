@@ -1,4 +1,4 @@
-import { Signal, Source, Talkback } from "../interface";
+import { Signal, Source, Talkback } from "~/streams/interface";
 
 export type Dispose = () => void;
 

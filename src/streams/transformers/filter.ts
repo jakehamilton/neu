@@ -1,4 +1,4 @@
-import { Signal, Transformer } from "../interface";
+import { Signal, Transformer } from "~/streams/interface";
 
 export const filter =
 	<Input, Output>(fn: (value: Input) => boolean): Transformer<Input, Output> =>

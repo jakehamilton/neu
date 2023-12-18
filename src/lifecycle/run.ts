@@ -1,5 +1,5 @@
-import { Signal, Source } from "../streams/interface";
-import { proxy } from "../streams/util/proxy";
+import { Signal, Source } from "~/streams/interface";
+import { proxy } from "~/streams/util/proxy";
 
 /*
 import * as neu from "neu";

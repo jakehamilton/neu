@@ -1,4 +1,4 @@
-import { Signal, Talkback, Transformer } from "../interface";
+import { Signal, Talkback, Transformer } from "~/streams/interface";
 
 export const when =
 	<Value>(fn: (value: Value) => boolean): Transformer<Value, Value> =>

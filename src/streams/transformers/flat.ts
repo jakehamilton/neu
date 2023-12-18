@@ -1,4 +1,4 @@
-import { Signal, Source, Talkback, Transformer } from "../interface";
+import { Signal, Source, Talkback, Transformer } from "~/streams/interface";
 
 export const flat =
 	<Value>(): Transformer<Value | Source<Value>, Value> =>

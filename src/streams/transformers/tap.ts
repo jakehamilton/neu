@@ -1,4 +1,4 @@
-import { Signal, Source, Transformer } from "../interface";
+import { Signal, Transformer } from "~/streams/interface";
 
 export const tap =
 	<Value, Error>(
