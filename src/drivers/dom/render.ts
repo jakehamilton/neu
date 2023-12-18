@@ -21,21 +21,42 @@ export const create = <T extends Element>(_root: T, node: VNode) => {
 
 	const props = node.props ?? {};
 
+	const unsubscribes: Array<Dispose> = [];
+
 	for (const key in props) {
 		if (key.startsWith("on")) {
 			const name = key.slice(2).toLowerCase();
 			element.addEventListener(name, props[key]);
 		} else {
+			const value = props[key];
+
 			if (key in element) {
-				// @ts-expect-error
-				element[key] = props[key];
+				// If it looks like a Callbag...
+				if (typeof value === "function" && value.length === 2) {
+					unsubscribes.push(
+						subscribe((value) => {
+							// @ts-expect-error
+							element[key] = value;
+						})(value as Source<unknown>),
+					);
+				} else {
+					// @ts-expect-error
+					element[key] = props[key];
+				}
 			} else {
-				element.setAttribute(key, props[key]);
+				// If it looks like a Callbag...
+				if (typeof value === "function" && value.length === 2) {
+					unsubscribes.push(
+						subscribe((value) => {
+							element.setAttribute(key, props[key]);
+						})(value as Source<unknown>),
+					);
+				} else {
+					element.setAttribute(key, props[key]);
+				}
 			}
 		}
 	}
-
-	const unsubscribes: Array<Dispose> = [];
 
 	for (const child of node.children ?? []) {
 		if (typeof child === "function") {
@@ -92,21 +113,43 @@ export const write = <T extends Element>(
 
 	const props = node.props ?? {};
 
+	const unsubscribes: Array<Dispose> = [];
+
 	for (const key in props) {
 		if (key.startsWith("on")) {
 			const name = key.slice(2).toLowerCase();
 			element.addEventListener(name, props[key]);
 		} else {
+			const value = props[key];
+
 			if (key in element) {
-				// @ts-expect-error
-				element[key] = props[key];
+				// If it looks like a Callbag...
+				if (typeof value === "function" && value.length === 2) {
+					unsubscribes.push(
+						subscribe((value) => {
+							// @ts-expect-error
+							element[key] = value;
+							console.log("set", key, value);
+						})(value as Source<unknown>),
+					);
+				} else {
+					// @ts-expect-error
+					element[key] = props[key];
+				}
 			} else {
-				element.setAttribute(key, props[key]);
+				// If it looks like a Callbag...
+				if (typeof value === "function" && value.length === 2) {
+					unsubscribes.push(
+						subscribe((value) => {
+							element.setAttribute(key, props[key]);
+						})(value as Source<unknown>),
+					);
+				} else {
+					element.setAttribute(key, props[key]);
+				}
 			}
 		}
 	}
-
-	const unsubscribes: Array<Dispose> = [];
 
 	for (const child of node.children ?? []) {
 		if (typeof child === "function") {

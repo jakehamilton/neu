@@ -1,6 +1,6 @@
 import { Signal, Talkback, Transformer } from "../interface";
 
-export const takeWhile =
+export const when =
 	<Value>(fn: (value: Value) => boolean): Transformer<Value, Value> =>
 	(source) =>
 	(type, sink) => {

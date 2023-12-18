@@ -31,8 +31,9 @@ export { flatMap } from "~/streams/transformers/flatMap";
 export { fold } from "~/streams/transformers/fold";
 export { map } from "~/streams/transformers/map";
 export { start } from "~/streams/transformers/start";
-export { takeWhile } from "~/streams/transformers/takeWhile";
+export { when } from "~/streams/transformers/when";
 export { tap } from "~/streams/transformers/tap";
+export { unique } from "~/streams/transformers/unique";
 
 export { pipe } from "~/streams/util/pipe";
 export { proxy } from "./streams/util/proxy";

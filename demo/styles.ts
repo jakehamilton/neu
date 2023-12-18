@@ -4,12 +4,12 @@ glob`
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 input, button, select {
-  appearance: none;
-  -webkit-appearance: none;
+	appearance: none;
+	-webkit-appearance: none;
 }
 
 body,
@@ -22,34 +22,42 @@ figure,
 blockquote,
 dl,
 dd {
-  margin: 0;
+	margin: 0;
 }
 
 ul[role='list'],
 ol[role='list'] {
-  list-style: none;
+	list-style: none;
 }
 
 body {
-  min-height: 100svh;
-  text-rendering: optimizeLegibility;
-	font-family: Inter, sans-serif;
+	font-size: 16px;
+	min-height: 100svh;
+	text-rendering: optimizeLegibility;
+	font-family: Manrope, sans-serif;
 }
 
 a:not([class]) {
-  text-decoration-skip-ink: auto;
+	text-decoration-skip-ink: auto;
 }
 
 img,
 picture {
-  max-width: 100%;
-  display: block;
+	max-width: 100%;
+	display: block;
 }
 
 input,
 button,
 textarea,
 select {
-  font: inherit;
+	font: inherit;
+	color: inherit;
+	background: transparent;
+	border: none;
+}
+
+#app {
+	position: relative;
 }
 `;

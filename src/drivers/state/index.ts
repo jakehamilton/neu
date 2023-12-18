@@ -1,7 +1,7 @@
 import { Driver } from "~/lifecycle/run";
 import { tap } from "~/streams/transformers/tap";
 import { pipe } from "~/streams/util/pipe";
-import { Signal, Source } from "../../streams/interface";
+import { Signal, Source, Transformer } from "../../streams/interface";
 
 export type State = any;
 
@@ -12,20 +12,22 @@ const helpers = (
 	state: Map<string, any>,
 	listeners: Map<string, Array<(value: any) => void>>,
 ) => ({
-	write: (key: string) => (source: Source<any, any, any>) => {
-		return pipe(
-			source,
-			tap((value) => {
-				state.set(key, value);
+	write:
+		<T>(key: string): Transformer<T, T> =>
+		(source) => {
+			return pipe(
+				source,
+				tap((value: T) => {
+					state.set(key, value);
 
-				if (listeners.has(key)) {
-					listeners.get(key)!.forEach((listener) => listener(value));
-				}
-			}),
-		);
-	},
+					if (listeners.has(key)) {
+						listeners.get(key)!.forEach((listener) => listener(value));
+					}
+				}),
+			);
+		},
 	select:
-		(key: string): Source<any, any, any> =>
+		<T>(key: string): Source<T> =>
 		(type, sink) => {
 			if (type !== Signal.Start) {
 				return;
@@ -35,7 +37,7 @@ const helpers = (
 				sink(Signal.Data, value);
 			};
 
-			sink(Signal.Start, (type, data) => {
+			sink(Signal.Start, (type, _data) => {
 				if (type === Signal.End) {
 					const keyListeners = listeners.get(key) ?? [];
 					const index = keyListeners.indexOf(listener);
