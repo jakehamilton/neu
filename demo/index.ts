@@ -6,9 +6,11 @@ import * as neu from "~/index";
 
 import * as theme from "./theme";
 
-import { Header } from "./components/header";
 import { Button } from "./components/button";
+import { Header } from "./components/header";
 import { Hero } from "./components/hero";
+import { Dots } from "./components/dots";
+import { Callout } from "./components/callout";
 
 export type Theme = {
 	accent: {
@@ -29,6 +31,13 @@ export type Theme = {
 
 const AppClass = css({
 	height: "400vh",
+});
+
+const CalloutsClass = css({
+	display: "flex",
+	flexDirection: "column",
+	gap: "6rem",
+	padding: "4rem 0",
 });
 
 export type Drivers = {
@@ -58,18 +67,13 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 
 	const countB$ = neu.pipe(clicks("#b"));
 
-	const textA$ = neu.pipe(
-		state.select("countA"),
-		neu.map((count) => neu.dom.span(String(count))),
-	);
-
-	const textB$ = neu.pipe(
-		state.select("countB"),
-		neu.map((count) => neu.dom.span(String(count))),
-	);
-
 	const header = Header({ dom, state, theme });
 	const hero = Hero({ dom, state, theme });
+	const dots = Dots({ dom, state, theme }, { sine: true });
+	const invertedDots = Dots(
+		{ dom, state, theme },
+		{ sine: true, invert: true },
+	);
 
 	const state$ = neu.merge(
 		neu.pipe(countA$, state.write<number>("countA")),
@@ -86,20 +90,52 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 				[
 					header.dom,
 					hero.dom,
-					Button(
-						{
-							id: "a",
-						},
-						"Click me!",
-					),
-					Button(
-						{
-							id: "b",
-						},
-						"Click me!",
-					),
-					neu.dom.p(["CountA: ", textA$]),
-					neu.dom.p(["CountB: ", textB$]),
+					dots.dom,
+					neu.dom.div({ class: CalloutsClass }, [
+						neu.dom.div([
+							Callout(
+								{ dom, state, theme },
+								{
+									title: "dynamic",
+									description:
+										"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in eros vitae sapien ultricies aliquam. Donec auctor, eros quis tincidunt aliquam, nunc nulla facilisis lectus, a ultricies leo lorem eu nunc.",
+								},
+							).dom,
+						]),
+						neu.dom.div([
+							Callout(
+								{ dom, state, theme },
+								{
+									title: "familiar",
+									description:
+										"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in eros vitae sapien ultricies aliquam. Donec auctor, eros quis tincidunt aliquam, nunc nulla facilisis lectus, a ultricies leo lorem eu nunc.",
+									invert: true,
+								},
+							).dom,
+						]),
+						neu.dom.div([
+							Callout(
+								{ dom, state, theme },
+								{
+									title: "prepared",
+									description:
+										"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in eros vitae sapien ultricies aliquam. Donec auctor, eros quis tincidunt aliquam, nunc nulla facilisis lectus, a ultricies leo lorem eu nunc.",
+								},
+							).dom,
+						]),
+						neu.dom.div([
+							Callout(
+								{ dom, state, theme },
+								{
+									title: "open",
+									description:
+										"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in eros vitae sapien ultricies aliquam. Donec auctor, eros quis tincidunt aliquam, nunc nulla facilisis lectus, a ultricies leo lorem eu nunc.",
+									invert: true,
+								},
+							).dom,
+						]),
+					]),
+					invertedDots.dom,
 				],
 			),
 		),
@@ -112,7 +148,7 @@ neu.run<Drivers>({
 	dom: neu.dom.driver("#app"),
 	theme: theme.driver<Theme>({
 		accent: {
-			text: "#eceff4",
+			foreground: "#eceff4",
 			background: "#b48ead",
 		},
 		foreground: {

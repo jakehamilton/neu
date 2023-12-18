@@ -27,6 +27,7 @@ export { event } from "~/streams/sources/event";
 export { interval } from "~/streams/sources/interval";
 export { merge } from "~/streams/sources/merge";
 export { of } from "~/streams/sources/of";
+export { combine } from "~/streams/sources/combine";
 
 export { filter } from "~/streams/transformers/filter";
 export { flatMap } from "~/streams/transformers/flatMap";
@@ -37,6 +38,7 @@ export { when } from "~/streams/transformers/when";
 export { tap } from "~/streams/transformers/tap";
 export { unique } from "~/streams/transformers/unique";
 
+export { broadcast } from "~/streams/util/broadcast";
 export { pipe } from "~/streams/util/pipe";
 export { proxy } from "./streams/util/proxy";
 export { share } from "./streams/util/share";

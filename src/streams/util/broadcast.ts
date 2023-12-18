@@ -1,6 +1,6 @@
 import { Signal, Sink, Source, Talkback } from "~/streams/interface";
 
-export const share = <Data, EI, EO>(
+export const broadcast = <Data, EI, EO>(
 	source: Source<Data, EI, EO>,
 ): Source<Data, EI, EO> => {
 	let sinks: Array<Sink<Data, EI, EO>> = [];
@@ -18,9 +18,6 @@ export const share = <Data, EI, EO>(
 				const index = sinks.indexOf(sink);
 				if (index > -1) {
 					sinks.splice(index, 1);
-				}
-				if (sinks.length > 0) {
-					sourceTalkback?.(Signal.End);
 				}
 			} else {
 				sourceTalkback?.(type, error);

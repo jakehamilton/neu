@@ -16,6 +16,7 @@ const HeaderClass = (theme: Theme) =>
 		background: theme.background.dark,
 		transition: "background 0.25s ease",
 		overflow: "hidden",
+		zIndex: "100",
 	});
 
 const HeaderLeftClass = css({

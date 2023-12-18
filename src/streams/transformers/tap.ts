@@ -1,7 +1,7 @@
 import { Signal, Transformer } from "~/streams/interface";
 
 export const tap =
-	<Value, Error>(
+	<Value, Error = unknown>(
 		fn: (value: Value) => void,
 	): Transformer<Value, Value, Error> =>
 	(source) =>
