@@ -23,7 +23,7 @@ const TitleClass = (theme: Theme, invert: boolean) =>
 		fontSize: "3.5rem",
 		textAlign: invert ? "right" : "left",
 		color: theme.accent.background,
-		textShadow: `0 0 4rem ${theme.accent.background}`,
+		textShadow: `0 0 4.5rem ${theme.accent.background}`,
 	});
 
 const DescriptionClass = (invert: boolean) =>

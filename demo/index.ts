@@ -62,6 +62,11 @@ const CodeTitleClass = (theme: Theme) =>
 		fontFamily: theme.font.title,
 	});
 
+const NeuClass = (theme: Theme) =>
+	css({
+		color: theme.accent.background,
+	});
+
 export type Drivers = {
 	dom: neu.DomDriver;
 	state: neu.StateDriver;
@@ -166,7 +171,13 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 						neu.dom.h3({ class: CodeTitleClass(theme) }, ["get started"]),
 						Code(
 							{ dom, state, theme },
-							{ text: "npm install neu", center: true },
+							{
+								text: neu.dom.span([
+									"npm install ",
+									neu.dom.span({ class: NeuClass(theme) }, "neu"),
+								]),
+								center: true,
+							},
 						),
 					]),
 				],
