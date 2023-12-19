@@ -3,6 +3,77 @@ import { Dispose, subscribe } from "~/streams/sinks/subscribe";
 
 import { VNode } from "./elements";
 
+const isSvg = (type: string) => {
+	return [
+		"svg",
+		"animate",
+		"animateMotion",
+		"animateTransform",
+		"circle",
+		"clipPath",
+		"defs",
+		"desc",
+		"ellipse",
+		"feBlend",
+		"feColorMatrix",
+		"feComponentTransfer",
+		"feComposite",
+		"feConvolveMatrix",
+		"feDiffuseLighting",
+		"feDisplacementMap",
+		"feDistantLight",
+		"feDropShadow",
+		"feFlood",
+		"feFuncA",
+		"feFuncB",
+		"feFuncG",
+		"feFuncR",
+		"feGaussianBlur",
+		"feImage",
+		"feMerge",
+		"feMergeNode",
+		"feMorphology",
+		"feOffset",
+		"fePointLight",
+		"feSpecularLighting",
+		"feSpotLight",
+		"feTile",
+		"feTurbulence",
+		"filter",
+		"foreignObject",
+		"g",
+		"image",
+		"line",
+		"linearGradient",
+		"marker",
+		"mask",
+		"metadata",
+		"mpath",
+		"path",
+		"pattern",
+		"polygon",
+		"polyline",
+		"radialGradient",
+		"rect",
+		"stop",
+		"switch",
+		"symbol",
+		"text",
+		"textPath",
+		"tspan",
+		"use",
+		"view",
+	].includes(type);
+};
+
+const camelCaseToKebabCase = (string: string) => {
+	if (string === "viewBox") {
+		return string;
+	}
+
+	return string.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+};
+
 const empty = (element: Element) => {
 	while (element.firstChild) {
 		element.removeChild(element.firstChild);
@@ -25,10 +96,11 @@ const setStreamedPropertyOrAttribute = (
 	element: Element,
 	key: string,
 	value: Source<any>,
+	svg: boolean = false,
 ): Array<Dispose> => {
 	const unsubscribes: Array<Dispose> = [];
 
-	if (key in element) {
+	if (key in element && !svg) {
 		unsubscribes.push(
 			subscribe((value) => {
 				setProperty(element, key, value);
@@ -37,7 +109,10 @@ const setStreamedPropertyOrAttribute = (
 	} else {
 		unsubscribes.push(
 			subscribe((value) => {
-				element.setAttribute(key, value as string);
+				element.setAttribute(
+					svg ? key : camelCaseToKebabCase(key),
+					value as string,
+				);
 			})(value as Source<unknown>),
 		);
 	}
@@ -49,6 +124,7 @@ const setPropertyOrAttribute = (
 	element: Element,
 	key: string,
 	value: any,
+	svg: boolean = false,
 ): Array<Dispose> => {
 	const unsubscribes: Array<Dispose> = [];
 
@@ -62,10 +138,10 @@ const setPropertyOrAttribute = (
 	} else if (typeof value === "function" && value.length === 2) {
 		unsubscribes.push(...setStreamedPropertyOrAttribute(element, key, value));
 	} else {
-		if (key in element) {
+		if (key in element && !svg) {
 			setProperty(element, key, value);
 		} else {
-			element.setAttribute(key, value);
+			element.setAttribute(svg ? key : camelCaseToKebabCase(key), value);
 		}
 	}
 
@@ -81,21 +157,29 @@ export const create = <T extends Element>(_root: T, node: VNode) => {
 		return { element: document.createTextNode(node), unsubscribes: [] };
 	}
 
-	const element = document.createElement(node.type);
+	const svg = isSvg(node.type);
+
+	const element = svg
+		? document.createElementNS("http://www.w3.org/2000/svg", node.type)
+		: document.createElement(node.type);
 
 	const props = node.props ?? {};
 
 	const unsubscribes: Array<Dispose> = [];
 
 	for (const key in props) {
-		const result = setPropertyOrAttribute(element, key, props[key]);
+		const result = setPropertyOrAttribute(element, key, props[key], svg);
 
 		if (result.length) {
 			unsubscribes.push(...result);
 		}
 	}
 
-	for (const child of node.children ?? []) {
+	for (let child of node.children ?? []) {
+		if (typeof child === "object" && child !== null && "dom" in child) {
+			child = child.dom;
+		}
+
 		if (typeof child === "function") {
 			let childElement: Element | Comment = document.createComment("neu:node");
 			let childUnsubscribes: Array<Dispose> = [];

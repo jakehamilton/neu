@@ -14,10 +14,11 @@ const HeroClass = css({
 	padding: "0 1rem",
 });
 
-const HeroTitleClass = css({
-	fontFamily: "Ysabeau SC",
-	fontSize: "4rem",
-});
+const HeroTitleClass = (theme: Theme) =>
+	css({
+		fontSize: "4rem",
+		fontFamily: theme.font.title,
+	});
 
 const NeuClass = (theme: Theme) =>
 	css({
@@ -25,14 +26,14 @@ const NeuClass = (theme: Theme) =>
 		textShadow: `0 0 5rem ${theme.accent.background}`,
 	});
 
-export const Hero: neu.App<Drivers> = ({ dom, theme }) => {
+export const Hero: neu.App<Drivers, { dom: neu.VNodeStream }> = ({ theme }) => {
 	return {
 		dom: neu.of(
 			neu.dom.div({ class: HeroClass }, [
 				neu.dom.div([
 					neu.dom.h1(
 						{
-							class: HeroTitleClass,
+							class: HeroTitleClass(theme),
 						},
 						[
 							"the ",

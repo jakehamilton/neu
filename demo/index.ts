@@ -6,7 +6,6 @@ import * as neu from "~/index";
 
 import * as theme from "./theme";
 
-import { Button } from "./components/button";
 import { Header } from "./components/header";
 import { Hero } from "./components/hero";
 import { Dots } from "./components/dots";
@@ -27,6 +26,10 @@ export type Theme = {
 		light: string;
 		normal: string;
 		dark: string;
+	};
+	font: {
+		title: string;
+		normal: string;
 	};
 };
 
@@ -55,46 +58,23 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 		html {
 			color: ${theme.foreground.light};
 			background: ${theme.background.dark};
+			font-family: ${theme.font.normal};
 		}
 	`;
 
-	const clicks = (selector: string) =>
-		neu.pipe(
-			dom.select(selector),
-			neu.filter<Element | null, Element>((x) => x !== null),
-			neu.flatMap<Element, Event>(neu.event("click")),
-			neu.fold((acc) => acc + 1, 0),
-			neu.start(0),
-		);
-
-	const countA$ = neu.pipe(clicks("#a"));
-
-	const countB$ = neu.pipe(clicks("#b"));
-
 	const header = Header({ dom, state, theme });
 	const hero = Hero({ dom, state, theme });
-	const dots = Dots({ dom, state, theme }, { sine: true });
-	const invertedDots = Dots(
-		{ dom, state, theme },
-		{ sine: true, invert: true },
-	);
-
-	const state$ = neu.merge(
-		neu.pipe(countA$, state.write<number>("countA")),
-		neu.pipe(countB$, state.write<number>("countB")),
-	);
 
 	return {
-		state: state$,
 		dom: neu.of(
 			neu.dom.div(
 				{
 					class: AppClass,
 				},
 				[
-					header.dom,
-					hero.dom,
-					dots.dom,
+					header,
+					hero,
+					Dots({ dom, state, theme }, { sine: true }),
 					neu.dom.div({ class: CalloutsClass }, [
 						neu.dom.div([
 							Callout(
@@ -115,7 +95,7 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 										" to enable highly reponsive, reactive applications.",
 									]),
 								},
-							).dom,
+							),
 						]),
 						neu.dom.div([
 							Callout(
@@ -147,7 +127,7 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 									]),
 									invert: true,
 								},
-							).dom,
+							),
 						]),
 						neu.dom.div([
 							Callout(
@@ -155,9 +135,9 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 								{
 									title: "prepared",
 									description:
-										"One dependency from start to finish. Neu provides all of the utilities needed to build your application. From stream primitives to components to state to components, Neu has you covered.",
+										"One dependency from start to finish. Neu provides all of the utilities needed to build your application. From stream primitives to state to components, Neu has you covered.",
 								},
-							).dom,
+							),
 						]),
 						neu.dom.div([
 							Callout(
@@ -179,10 +159,10 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 									]),
 									invert: true,
 								},
-							).dom,
+							),
 						]),
 					]),
-					invertedDots.dom,
+					Dots({ dom, state, theme }, { sine: true, invert: true }),
 				],
 			),
 		),
@@ -207,6 +187,12 @@ neu.run<Drivers>({
 			light: "#434c5e",
 			normal: "#3b4252",
 			dark: "#2e3440",
+		},
+		font: {
+			title:
+				"Ysabeau SC, San Francisco, -system-font, Helvetica Neue, Helvetica, Arial, sans-serif",
+			normal:
+				"Manrope, San Francisco, -system-font, Helvetica Neue, Helvetica, Arial, sans-serif",
 		},
 	}),
 });

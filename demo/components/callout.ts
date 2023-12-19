@@ -19,7 +19,7 @@ const CalloutClass = (invert: boolean) =>
 
 const TitleClass = (theme: Theme, invert: boolean) =>
 	css({
-		fontFamily: "Ysabeau SC",
+		fontFamily: theme.font.title,
 		fontSize: "3.5rem",
 		textAlign: invert ? "right" : "left",
 		color: theme.accent.background,

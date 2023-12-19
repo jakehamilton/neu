@@ -3,6 +3,7 @@ import { css } from "@littlethings/css";
 import * as neu from "~/index";
 
 import { Drivers, Theme } from "..";
+import { Github } from "./github";
 
 const HeaderClass = (theme: Theme) =>
 	css({
@@ -24,10 +25,10 @@ const HeaderLeftClass = css({
 	flexGrow: "1",
 });
 
-const LeftTitleClass = css({
+const LeftTitleClass = (theme: Theme) => css({
 	fontSize: "1.25rem",
 	fontWeight: "bold",
-	fontFamily: "Ysabeau SC",
+	fontFamily: theme.font.title,
 });
 
 const NeuClass = (theme: Theme) =>
@@ -42,7 +43,11 @@ const HeaderRightClass = css({
 	flexGrow: "1",
 });
 
-export const Header: neu.App<Drivers> = ({ dom, theme }) => {
+export const Header: neu.App<Drivers, { dom: neu.VNodeStream }> = ({
+	dom,
+	state,
+	theme,
+}) => {
 	const isScrolled$ = neu.pipe(
 		neu.event("scroll")(window),
 		neu.map(() => window.scrollY),
@@ -78,12 +83,30 @@ export const Header: neu.App<Drivers> = ({ dom, theme }) => {
 				neu.dom.div({ class: HeaderLeftClass }, [
 					neu.dom.h1(
 						{
-							class: LeftTitleClass,
+							class: LeftTitleClass(theme),
 						},
 						[title$],
 					),
 				]),
-				neu.dom.div({ class: HeaderRightClass }),
+				neu.dom.div({ class: HeaderRightClass }, [
+					neu.dom.a(
+						{
+							ariaLabel: "Github",
+							href: "https://github.com/jakehamilton/neu",
+							target: "_blank",
+							rel: "noopener noreferrer",
+						},
+						[
+							Github(
+								{ dom, state, theme },
+								{
+									width: 24,
+									height: 24,
+								},
+							),
+						],
+					),
+				]),
 			]),
 		),
 	};
