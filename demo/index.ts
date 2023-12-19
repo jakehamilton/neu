@@ -96,7 +96,7 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 						rel: "noopener noreferrer",
 					},
 				),
-				" to enable highly reponsive, reactive applications.",
+				" to enable highly reponsive, reactive web applications.",
 			]),
 		},
 		{
