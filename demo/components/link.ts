@@ -10,13 +10,13 @@ const LinkClass = (theme: Theme) =>
 		textUnderlineOffset: "0.175rem",
 	});
 
-type Props = {
+export type LinkProps = {
 	text: neu.VNode | neu.VNodeStream;
 	href: string;
 	[key: string]: any;
 };
 
-export const Link: neu.App<Drivers, {}, Props> = ({ theme }, props) => {
+export const Link: neu.App<Drivers, {}, LinkProps> = ({ theme }, props) => {
 	const { text, ...rest } = props;
 
 	return {

@@ -7,6 +7,7 @@ export type DomDriver = domDriver.DomDriver;
 
 export type VNode = elements.VNode;
 export type VNodeStream = elements.VNodeStream;
+export type VNodeChildren = elements.VNodeChildren;
 
 export const dom = {
 	...elements,

@@ -5,8 +5,12 @@ import * as neu from "~/index";
 const ButtonClass = css({});
 
 export const Button: typeof neu.dom.button = (props, children) => {
-	if (Array.isArray(props) || neu.dom.isVNode(props)) {
-		return neu.dom.button({}, props);
+	if (
+		Array.isArray(props) ||
+		neu.dom.isVNode(props) ||
+		typeof props === "function"
+	) {
+		return neu.dom.button({}, props as neu.VNodeChildren);
 	} else {
 		return neu.dom.button(
 			{

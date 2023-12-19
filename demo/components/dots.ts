@@ -2,8 +2,6 @@ import { css } from "@littlethings/css";
 
 import * as neu from "~/index";
 
-import * as theme from "../theme";
-
 import { Drivers, Theme } from "..";
 
 const DOT_DIAMETER = 20;
@@ -27,15 +25,18 @@ const DotClass = (theme: Theme, isEven: boolean) =>
 		background: isEven ? theme.background.normal : theme.background.light,
 		transition: "transform 0ms linear",
 		zIndex: "1",
+		"@media (prefers-reduced-motion)": {
+			transform: "translateX(-100%) !important",
+		},
 	});
 
-type Props = {
+export type DotsProps = {
 	invert?: boolean;
 	speed?: number;
 	sine?: boolean;
 };
 
-export const Dots: neu.App<Drivers, { dom: neu.VNodeStream }, Props> = (
+export const Dots: neu.App<Drivers, { dom: neu.VNodeStream }, DotsProps> = (
 	{ theme },
 	{ invert = false, speed = 0.25, sine = false },
 ) => {

@@ -1,7 +1,7 @@
 import { Signal, Source } from "~/streams/interface";
 import { Dispose, subscribe } from "~/streams/sinks/subscribe";
 
-import { VNode } from "./elements";
+import { VNode, VNode, VNodeStream } from "./elements";
 
 const isSvg = (type: string) => {
 	return [
@@ -175,7 +175,19 @@ export const create = <T extends Element>(_root: T, node: VNode) => {
 		}
 	}
 
-	for (let child of node.children ?? []) {
+	let children: Array<VNode | VNodeStream | { dom: VNodeStream }>;
+
+	if (typeof node.children === "function") {
+		children = [node.children];
+	} else if (Array.isArray(node.children)) {
+		children = node.children;
+	} else if (node.children != null) {
+		children = [node.children];
+	} else {
+		children = [];
+	}
+
+	for (let child of children) {
 		if (typeof child === "object" && child !== null && "dom" in child) {
 			child = child.dom;
 		}

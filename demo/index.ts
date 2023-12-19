@@ -9,8 +9,9 @@ import * as theme from "./theme";
 import { Header } from "./components/header";
 import { Hero } from "./components/hero";
 import { Dots } from "./components/dots";
-import { Callout } from "./components/callout";
+import { Callout, CalloutProps } from "./components/callout";
 import { Link } from "./components/link";
+import { Code } from "./components/code";
 
 export type Theme = {
 	accent: {
@@ -34,7 +35,7 @@ export type Theme = {
 };
 
 const AppClass = css({
-	height: "400vh",
+	paddingBottom: "8rem",
 });
 
 const CalloutsClass = css({
@@ -46,6 +47,20 @@ const CalloutsClass = css({
 	margin: "0 auto",
 	maxWidth: "60rem",
 });
+
+const CodeClass = css({
+	display: "flex",
+	alignItems: "center",
+	flexDirection: "column",
+	gap: "2rem",
+	padding: "6rem 2rem",
+});
+
+const CodeTitleClass = (theme: Theme) =>
+	css({
+		fontSize: "4rem",
+		fontFamily: theme.font.title,
+	});
 
 export type Drivers = {
 	dom: neu.DomDriver;
@@ -62,8 +77,73 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 		}
 	`;
 
-	const header = Header({ dom, state, theme });
-	const hero = Hero({ dom, state, theme });
+	const callouts: Array<CalloutProps> = [
+		{
+			title: "dynamic",
+			description: neu.dom.span([
+				"React in real-time to users, not the other way around. Neu is built on ",
+				Link(
+					{ dom, state, theme },
+					{
+						text: "Callbags",
+						href: "https://github.com/callbag/callbag",
+						target: "_blank",
+						rel: "noopener noreferrer",
+					},
+				),
+				" to enable highly reponsive, reactive applications.",
+			]),
+		},
+		{
+			invert: true,
+			title: "familiar",
+			description: neu.dom.span([
+				"Build applications like you already know and love. Neu applications are made up of components that are mapped to the DOM just like ",
+				Link(
+					{ dom, state, theme },
+					{
+						text: "React",
+						href: "https://reactjs.org/",
+						target: "_blank",
+						rel: "noopener noreferrer",
+					},
+				),
+				" and stream data like ",
+				Link(
+					{ dom, state, theme },
+					{
+						text: "SolidJS",
+						href: "https://www.solidjs.com/",
+						target: "_blank",
+						rel: "noopener noreferrer",
+					},
+				),
+				".",
+			]),
+		},
+		{
+			title: "prepared",
+			description:
+				"One dependency from start to finish. Neu provides all of the utilities needed to build your application. From stream primitives to state to components, Neu has you covered.",
+		},
+		{
+			invert: true,
+			title: "open",
+			description: neu.dom.span([
+				"Free to the world, free to you. Neu is Open Source from day one so you can focus on building instead of bureaucracy. ",
+				Link(
+					{ dom, state, theme },
+					{
+						text: "Help us build a better web",
+						href: "https://github.com/jakehamilton/neu",
+						target: "_blank",
+						re: "noopener noreferrer",
+					},
+				),
+				".",
+			]),
+		},
+	];
 
 	return {
 		dom: neu.of(
@@ -72,97 +152,23 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 					class: AppClass,
 				},
 				[
-					header,
-					hero,
+					Header({ dom, state, theme }),
+					Hero({ dom, state, theme }),
 					Dots({ dom, state, theme }, { sine: true }),
-					neu.dom.div({ class: CalloutsClass }, [
-						neu.dom.div([
-							Callout(
-								{ dom, state, theme },
-								{
-									title: "dynamic",
-									description: neu.dom.span([
-										"React in real-time to users, not the other way around. Neu is built on ",
-										Link(
-											{ dom, state, theme },
-											{
-												text: "Callbags",
-												href: "https://github.com/callbag/callbag",
-												target: "_blank",
-												rel: "noopener noreferrer",
-											},
-										).dom,
-										" to enable highly reponsive, reactive applications.",
-									]),
-								},
-							),
-						]),
-						neu.dom.div([
-							Callout(
-								{ dom, state, theme },
-								{
-									title: "familiar",
-									description: neu.dom.span([
-										"Build applications like you already know and love. Neu applications are made up of components that are mapped to the DOM just like ",
-										Link(
-											{ dom, state, theme },
-											{
-												text: "React",
-												href: "https://reactjs.org/",
-												target: "_blank",
-												rel: "noopener noreferrer",
-											},
-										).dom,
-										" and stream data like ",
-										Link(
-											{ dom, state, theme },
-											{
-												text: "SolidJS",
-												href: "https://www.solidjs.com/",
-												target: "_blank",
-												rel: "noopener noreferrer",
-											},
-										).dom,
-										".",
-									]),
-									invert: true,
-								},
-							),
-						]),
-						neu.dom.div([
-							Callout(
-								{ dom, state, theme },
-								{
-									title: "prepared",
-									description:
-										"One dependency from start to finish. Neu provides all of the utilities needed to build your application. From stream primitives to state to components, Neu has you covered.",
-								},
-							),
-						]),
-						neu.dom.div([
-							Callout(
-								{ dom, state, theme },
-								{
-									title: "open",
-									description: neu.dom.span([
-										"Free to the world, free to you. Neu is Open Source from day one so you can focus on building instead of bureaucracy. ",
-										Link(
-											{ dom, state, theme },
-											{
-												text: "Help us build a better web",
-												href: "https://github.com/jakehamilton/neu",
-												target: "_blank",
-												re: "noopener noreferrer",
-											},
-										).dom,
-										".",
-									]),
-									invert: true,
-								},
-							),
-						]),
-					]),
+
+					neu.dom.div(
+						{ class: CalloutsClass },
+						callouts.map((props) => Callout({ dom, state, theme }, props)),
+					),
 					Dots({ dom, state, theme }, { sine: true, invert: true }),
+
+					neu.dom.div({ class: CodeClass }, [
+						neu.dom.h3({ class: CodeTitleClass(theme) }, ["get started"]),
+						Code(
+							{ dom, state, theme },
+							{ text: "npm install neu", center: true },
+						),
+					]),
 				],
 			),
 		),

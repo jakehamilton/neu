@@ -3,7 +3,7 @@ import { Drivers, Theme } from "demo";
 
 import * as neu from "~/index";
 
-type Props = {
+export type CalloutProps = {
 	title: neu.VNode | neu.VNodeStream;
 	description: neu.VNode | neu.VNodeStream;
 	invert?: boolean;
@@ -32,10 +32,13 @@ const DescriptionClass = (invert: boolean) =>
 		textAlign: "justify",
 	});
 
-export const Callout: neu.App<Drivers, {}, Props> = (
-	{ theme },
-	{ title, description, invert = false },
-) => {
+export const Callout: neu.App<
+	Drivers,
+	{
+		dom: neu.VNodeStream;
+	},
+	CalloutProps
+> = ({ theme }, { title, description, invert = false }) => {
 	return {
 		dom: neu.of(
 			neu.dom.div({ class: CalloutClass(invert) }, [

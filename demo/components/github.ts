@@ -2,12 +2,9 @@ import { clsx, css } from "@littlethings/css";
 
 import * as neu from "~/index";
 
-// @ts-ignore
-import icon from "../assets/github.svg";
-
 import { Drivers, Theme } from "..";
 
-type Props = {
+export type GithubProps = {
 	width?: number;
 	height?: number;
 	[key: string]: any;
@@ -22,7 +19,7 @@ const GithubClass = (theme: Theme) =>
 		},
 	});
 
-export const Github: neu.App<Drivers, { dom: neu.VNodeStream }, Props> = (
+export const Github: neu.App<Drivers, { dom: neu.VNodeStream }, GithubProps> = (
 	{ theme },
 	{ width = 32, height = 32, ...props },
 ) => {

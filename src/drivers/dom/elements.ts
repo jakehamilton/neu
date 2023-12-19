@@ -1,6 +1,9 @@
 import { Source } from "~/streams/interface";
 
-export type VNodeChildren = Array<VNode | VNodeStream | { dom: VNodeStream }>;
+export type VNodeChildren =
+	| Array<VNode | VNodeStream | { dom: VNodeStream }>
+	| VNodeStream
+	| VNode;
 
 export type VNodeElement = {
 	type: string;
@@ -22,19 +25,16 @@ export const isVNodeElement = (value: any): value is VNode => {
 
 export function node(type: string): VNodeElement;
 export function node(type: string, props: Record<string, any>): VNodeElement;
-export function node(
-	type: string,
-	children: VNodeChildren | VNode,
-): VNodeElement;
+export function node(type: string, children: VNodeChildren): VNodeElement;
 export function node(
 	type: string,
 	props: Record<string, any>,
-	children: VNodeChildren | VNode,
+	children: VNodeChildren,
 ): VNodeElement;
 export function node(
 	type: string,
-	props?: Record<string, any> | VNodeChildren | VNode,
-	children?: VNodeChildren | VNode,
+	props?: Record<string, any> | VNodeChildren,
+	children?: VNodeChildren,
 ): VNodeElement {
 	if (props === undefined) {
 		return { type };
@@ -58,10 +58,7 @@ export function node(
 
 const _node =
 	(type: string) =>
-	(
-		props?: Record<string, any> | VNodeChildren | VNode,
-		children?: VNodeChildren | VNode,
-	) =>
+	(props?: Record<string, any> | VNodeChildren, children?: VNodeChildren) =>
 		// @ts-ignore
 		node(type, props, children);
 
