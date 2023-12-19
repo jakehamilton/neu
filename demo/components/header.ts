@@ -25,11 +25,12 @@ const HeaderLeftClass = css({
 	flexGrow: "1",
 });
 
-const LeftTitleClass = (theme: Theme) => css({
-	fontSize: "1.25rem",
-	fontWeight: "bold",
-	fontFamily: theme.font.title,
-});
+const LeftTitleClass = (theme: Theme) =>
+	css({
+		fontSize: "1.25rem",
+		fontWeight: "bold",
+		fontFamily: theme.font.title,
+	});
 
 const NeuClass = (theme: Theme) =>
 	css({
@@ -51,7 +52,7 @@ export const Header: neu.App<Drivers, { dom: neu.VNodeStream }> = ({
 	const isScrolled$ = neu.pipe(
 		neu.event("scroll")(window),
 		neu.map(() => window.scrollY),
-		neu.map((scrollY: number) => scrollY > window.innerHeight * 0.25),
+		neu.map((scrollY: number) => scrollY > window.innerHeight * 0.15),
 		neu.start(false),
 		neu.unique<boolean>(),
 	);

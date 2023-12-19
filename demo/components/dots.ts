@@ -23,8 +23,8 @@ const DotClass = (theme: Theme, isEven: boolean) =>
 		height: `${DOT_DIAMETER}px`,
 		borderRadius: "50%",
 		background: isEven ? theme.background.normal : theme.background.light,
-		transition: "transform 0ms linear",
 		zIndex: "1",
+		transform: "translateX(-100%)",
 		"@media (prefers-reduced-motion)": {
 			transform: "translateX(-100%) !important",
 		},
