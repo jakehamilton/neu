@@ -12,6 +12,7 @@ import { Dots } from "./components/dots";
 import { Callout, CalloutProps } from "./components/callout";
 import { Link } from "./components/link";
 import { Code } from "./components/code";
+import { Router } from "./components/router";
 
 export type Theme = {
 	accent: {
@@ -67,18 +68,23 @@ const NeuClass = (theme: Theme) =>
 		color: theme.accent.background,
 	});
 
+export type State = {
+	scroll: number;
+};
+
 export type Drivers = {
 	dom: neu.DomDriver;
-	state: neu.StateDriver;
+	state: neu.StateDriver<State>;
+	history: neu.HistoryDriver;
 	theme: theme.ThemeDriver<Theme>;
 };
 
-const App: neu.App<Drivers> = ({ dom, state, theme }) => {
+const App: neu.App<Drivers> = (sources) => {
 	glob`
 		html {
-			color: ${theme.foreground.light};
-			background: ${theme.background.dark};
-			font-family: ${theme.font.normal};
+			color: ${sources.theme.foreground.light};
+			background: ${sources.theme.background.dark};
+			font-family: ${sources.theme.font.normal};
 		}
 	`;
 
@@ -87,15 +93,12 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 			title: "dynamic",
 			description: neu.dom.span([
 				"React in real-time to users, not the other way around. Neu is built on ",
-				Link(
-					{ dom, state, theme },
-					{
-						text: "Callbags",
-						href: "https://github.com/callbag/callbag",
-						target: "_blank",
-						rel: "noopener noreferrer",
-					},
-				),
+				Link(sources, {
+					text: "Callbags",
+					href: "https://github.com/callbag/callbag",
+					target: "_blank",
+					rel: "noopener noreferrer",
+				}),
 				" to enable highly reponsive, reactive web applications.",
 			]),
 		},
@@ -104,25 +107,19 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 			title: "familiar",
 			description: neu.dom.span([
 				"Build applications like you already know and love. Neu applications are made up of components that are mapped to the DOM just like ",
-				Link(
-					{ dom, state, theme },
-					{
-						text: "React",
-						href: "https://reactjs.org/",
-						target: "_blank",
-						rel: "noopener noreferrer",
-					},
-				),
+				Link(sources, {
+					text: "React",
+					href: "https://reactjs.org/",
+					target: "_blank",
+					rel: "noopener noreferrer",
+				}),
 				" and stream data like ",
-				Link(
-					{ dom, state, theme },
-					{
-						text: "SolidJS",
-						href: "https://www.solidjs.com/",
-						target: "_blank",
-						rel: "noopener noreferrer",
-					},
-				),
+				Link(sources, {
+					text: "SolidJS",
+					href: "https://www.solidjs.com/",
+					target: "_blank",
+					rel: "noopener noreferrer",
+				}),
 				".",
 			]),
 		},
@@ -136,15 +133,12 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 			title: "open",
 			description: neu.dom.span([
 				"Free to the world, free to you. Neu is Open Source from day one so you can focus on building instead of bureaucracy. ",
-				Link(
-					{ dom, state, theme },
-					{
-						text: "Help us build a better web",
-						href: "https://github.com/jakehamilton/neu",
-						target: "_blank",
-						re: "noopener noreferrer",
-					},
-				),
+				Link(sources, {
+					text: "Help us build a better web",
+					href: "https://github.com/jakehamilton/neu",
+					target: "_blank",
+					re: "noopener noreferrer",
+				}),
 				".",
 			]),
 		},
@@ -157,59 +151,85 @@ const App: neu.App<Drivers> = ({ dom, state, theme }) => {
 					class: AppClass,
 				},
 				[
-					Header({ dom, state, theme }),
-					Hero({ dom, state, theme }),
-					Dots({ dom, state, theme }, { sine: true }),
+					Router(
+						{ history: sources.history },
+						{
+							fallback: neu.of(neu.dom.div("404")),
+							routes: {
+								"/": neu.of(
+									neu.dom.div([
+										Header(sources),
+										Hero(sources),
+										Dots(sources, { sine: true }),
+										neu.dom.div(
+											{ class: CalloutsClass },
+											callouts.map((props) => Callout(sources, props)),
+										),
+										Dots(sources, { sine: true, invert: true }),
 
-					neu.dom.div(
-						{ class: CalloutsClass },
-						callouts.map((props) => Callout({ dom, state, theme }, props)),
-					),
-					Dots({ dom, state, theme }, { sine: true, invert: true }),
-
-					neu.dom.div({ class: CodeClass }, [
-						neu.dom.h3({ class: CodeTitleClass(theme) }, ["get started"]),
-						Code(
-							{ dom, state, theme },
-							{
-								text: neu.dom.span([
-									"npm install ",
-									neu.dom.span({ class: NeuClass(theme) }, "neu"),
-								]),
-								center: true,
+										neu.dom.div({ class: CodeClass }, [
+											neu.dom.h3({ class: CodeTitleClass(sources.theme) }, [
+												"get started",
+											]),
+											Code(sources, {
+												text: neu.dom.span([
+													"npm install ",
+													neu.dom.span(
+														{ class: NeuClass(sources.theme) },
+														"neu",
+													),
+												]),
+												center: true,
+											}),
+										]),
+									]),
+								),
 							},
-						),
-					]),
+						},
+					),
 				],
 			),
 		),
 	};
 };
 
-neu.run<Drivers>({
-	app: App,
-	state: neu.state.driver(),
-	dom: neu.dom.driver("#app"),
-	theme: theme.driver<Theme>({
-		accent: {
-			foreground: "#eceff4",
-			background: "#b48ead",
-		},
-		foreground: {
-			light: "#eceff4",
-			normal: "#e5e9f0",
-			dark: "#d8dee9",
-		},
-		background: {
-			light: "#434c5e",
-			normal: "#3b4252",
-			dark: "#2e3440",
-		},
-		font: {
-			title:
-				"Ysabeau SC, San Francisco, -system-font, Helvetica Neue, Helvetica, Arial, sans-serif",
-			normal:
-				"Manrope, San Francisco, -system-font, Helvetica Neue, Helvetica, Arial, sans-serif",
-		},
-	}),
-});
+const main = async () => {
+	// @ts-ignore
+	if (!globalThis.URLPattern) {
+		// TODO: Remove this when Firefox supports URLPattern.
+		await import("urlpattern-polyfill");
+	}
+
+	neu.run<Drivers>({
+		app: App,
+		state: neu.state.driver<State>({
+			scroll: 0,
+		}),
+		dom: neu.dom.driver("#app"),
+		history: neu.history.driver(),
+		theme: theme.driver<Theme>({
+			accent: {
+				foreground: "#eceff4",
+				background: "#b48ead",
+			},
+			foreground: {
+				light: "#eceff4",
+				normal: "#e5e9f0",
+				dark: "#d8dee9",
+			},
+			background: {
+				light: "#434c5e",
+				normal: "#3b4252",
+				dark: "#2e3440",
+			},
+			font: {
+				title:
+					"Ysabeau SC, San Francisco, -system-font, Helvetica Neue, Helvetica, Arial, sans-serif",
+				normal:
+					"Manrope, San Francisco, -system-font, Helvetica Neue, Helvetica, Arial, sans-serif",
+			},
+		}),
+	});
+};
+
+main();

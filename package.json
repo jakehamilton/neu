@@ -1,21 +1,22 @@
 {
-	"name": "@jakehamilton/neu",
-	"version": "0.0.0",
-	"description": "The Neu Web",
-	"main": "dist/neu.umd.js",
-	"scripts": {
-		"dev": "vite dev",
-		"test": "bun test"
-	},
-	"keywords": [],
-	"author": "Jake Hamilton <jake.hamilton@hey.com>",
-	"license": "Apache-2.0",
-	"dependencies": {
-		"@littlethings/css": "^1.0.7"
-	},
-	"devDependencies": {
-		"eslint": "^8.55.0",
-		"prettier": "^3.1.1",
-		"vite": "^5.0.10"
-	}
+  "name": "@jakehamilton/neu",
+  "version": "0.0.0",
+  "description": "The Neu Web",
+  "main": "dist/neu.umd.js",
+  "scripts": {
+    "dev": "vite dev",
+    "test": "bun test"
+  },
+  "keywords": [],
+  "author": "Jake Hamilton <jake.hamilton@hey.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@littlethings/css": "^1.0.7",
+    "urlpattern-polyfill": "^9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.1",
+    "vite": "^5.0.10"
+  }
 }
