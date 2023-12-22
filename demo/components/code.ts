@@ -5,7 +5,7 @@ import * as neu from "~/index";
 import { Drivers, Theme } from "..";
 
 export type CodeProps = {
-	text: neu.VNode | neu.VNodeStream;
+	text: neu.dom.VNode | neu.dom.VNodeStream;
 	center?: boolean;
 };
 
@@ -57,7 +57,7 @@ const PreClass = css({});
 export const Code: neu.App<
 	Drivers,
 	{
-		dom: neu.VNodeStream;
+		dom: neu.dom.VNodeStream;
 	},
 	CodeProps
 > = ({ theme }, { text, center = false }) => {

@@ -4,8 +4,8 @@ import { Drivers, Theme } from "demo";
 import * as neu from "~/index";
 
 export type CalloutProps = {
-	title: neu.VNode | neu.VNodeStream;
-	description: neu.VNode | neu.VNodeStream;
+	title: neu.dom.VNode | neu.dom.VNodeStream;
+	description: neu.dom.VNode | neu.dom.VNodeStream;
 	invert?: boolean;
 };
 
@@ -35,7 +35,7 @@ const DescriptionClass = (invert: boolean) =>
 export const Callout: neu.App<
 	Drivers,
 	{
-		dom: neu.VNodeStream;
+		dom: neu.dom.VNodeStream;
 	},
 	CalloutProps
 > = ({ theme }, { title, description, invert = false }) => {

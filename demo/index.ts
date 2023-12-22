@@ -73,9 +73,9 @@ export type State = {
 };
 
 export type Drivers = {
-	dom: neu.DomDriver;
-	state: neu.StateDriver<State>;
-	history: neu.HistoryDriver;
+	dom: neu.dom.DomDriver;
+	state: neu.state.StateDriver<State>;
+	history: neu.history.HistoryDriver;
 	theme: theme.ThemeDriver<Theme>;
 };
 

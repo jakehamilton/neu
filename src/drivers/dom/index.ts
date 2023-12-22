@@ -6,6 +6,8 @@ import { pipe } from "~/streams/util/pipe";
 import { VNode } from "./elements";
 import { render } from "./render";
 
+export * from "./elements";
+
 export type DomDriver = Driver<VNode, unknown, ReturnType<typeof helpers>>;
 
 const helpers = <Root extends Element>(source: Source<Root>) => {

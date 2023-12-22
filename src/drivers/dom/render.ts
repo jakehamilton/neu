@@ -1,7 +1,7 @@
 import { Signal, Source } from "~/streams/interface";
 import { Dispose, subscribe } from "~/streams/sinks/subscribe";
 
-import { VNode, VNode, VNodeStream } from "./elements";
+import { VNode, VNodeStream } from "./elements";
 
 const isSvg = (type: string) => {
 	return [
@@ -237,6 +237,7 @@ export const render =
 	<T extends Element>(root: T) =>
 	(source: Source<any>) => {
 		let unsubscribes: Array<Dispose> = [];
+
 		source(Signal.Start, (type, node) => {
 			if (type === Signal.Data) {
 				for (const unsubscribe of unsubscribes) {

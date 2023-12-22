@@ -44,7 +44,7 @@ const HeaderRightClass = css({
 	flexGrow: "1",
 });
 
-export const Header: neu.App<Drivers, { dom: neu.VNodeStream }> = ({
+export const Header: neu.App<Drivers, { dom: neu.dom.VNodeStream }> = ({
 	dom,
 	state,
 	theme,

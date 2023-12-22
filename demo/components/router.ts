@@ -1,16 +1,14 @@
 import * as neu from "~/index";
 
-import { Drivers } from "..";
-
 export type Props = {
-	routes: Record<string, neu.Source<neu.VNode>>;
-	fallback: neu.VNodeStream;
+	routes: Record<string, neu.Source<neu.dom.VNode>>;
+	fallback: neu.dom.VNodeStream;
 };
 
 export const Router: neu.App<
-	{ history: neu.HistoryDriver },
+	{ history: neu.history.HistoryDriver },
 	{
-		dom: neu.VNodeStream;
+		dom: neu.dom.VNodeStream;
 	},
 	Props
 > = ({ history }, { routes, fallback }) => {
@@ -27,7 +25,7 @@ export const Router: neu.App<
 
 			return fallback;
 		}),
-		neu.flat<neu.VNode>(),
+		neu.flat<neu.dom.VNode>(),
 	);
 
 	return {

@@ -11,7 +11,7 @@ const LinkClass = (theme: Theme) =>
 	});
 
 export type LinkProps = {
-	text: neu.VNode | neu.VNodeStream;
+	text: neu.dom.VNode | neu.dom.VNodeStream;
 	href: string;
 	[key: string]: any;
 };

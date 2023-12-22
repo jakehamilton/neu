@@ -10,7 +10,7 @@ export const Button: typeof neu.dom.button = (props, children) => {
 		neu.dom.isVNode(props) ||
 		typeof props === "function"
 	) {
-		return neu.dom.button({}, props as neu.VNodeChildren);
+		return neu.dom.button({}, props as neu.dom.VNodeChildren);
 	} else {
 		return neu.dom.button(
 			{

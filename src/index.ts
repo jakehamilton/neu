@@ -1,31 +1,7 @@
-import * as elements from "~/drivers/dom/elements";
-import * as domDriver from "~/drivers/dom";
-
-import * as stateDriver from "~/drivers/state";
-import * as historyDriver from "~/drivers/history";
-
-export type DomDriver = domDriver.DomDriver;
-
-export type VNode = elements.VNode;
-export type VNodeStream = elements.VNodeStream;
-export type VNodeChildren = elements.VNodeChildren;
-
-export const dom = {
-	...elements,
-	driver: domDriver.driver,
-};
-
-export type StateDriver<State> = stateDriver.StateDriver<State>;
-
-export const state = {
-	driver: stateDriver.driver,
-};
-
-export type HistoryDriver = historyDriver.HistoryDriver;
-
-export const history = {
-	driver: historyDriver.driver,
-};
+export * as dom from "~/drivers/dom";
+export * as state from "~/drivers/state";
+export * as history from "~/drivers/history";
+export * as tui from "~/drivers/tui";
 
 export * from "~/lifecycle/run";
 

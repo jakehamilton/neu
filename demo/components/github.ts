@@ -19,10 +19,11 @@ const GithubClass = (theme: Theme) =>
 		},
 	});
 
-export const Github: neu.App<Drivers, { dom: neu.VNodeStream }, GithubProps> = (
-	{ theme },
-	{ width = 32, height = 32, ...props },
-) => {
+export const Github: neu.App<
+	Drivers,
+	{ dom: neu.dom.VNodeStream },
+	GithubProps
+> = ({ theme }, { width = 32, height = 32, ...props }) => {
 	return {
 		dom: neu.of(
 			neu.dom.svg(
