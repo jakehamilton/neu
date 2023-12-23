@@ -9,10 +9,15 @@ export type HeaderProps = {
 };
 
 export const Header: neu.App<Drivers, {}, HeaderProps> = (sources, props) => {
+	const background$ = neu.pipe(
+		props.scroll,
+		neu.map((scroll) => (scroll > 8 ? "blackBright" : "transparent")),
+	);
+
 	const title$ = neu.pipe(
 		props.scroll,
 		neu.map((scroll) => {
-			if (scroll > 7) {
+			if (scroll > 8) {
 				return neu.tui.box(
 					{
 						flexDirection: "row",
@@ -44,7 +49,7 @@ export const Header: neu.App<Drivers, {}, HeaderProps> = (sources, props) => {
 					paddingBottom: 1,
 					paddingLeft: 2,
 					paddingRight: 2,
-					background: "blackBright",
+					background: background$,
 				},
 				[
 					title$,

@@ -16,7 +16,9 @@ export type Drivers = {
 const app: neu.App<Drivers> = (sources) => {
 	neu.pipe(
 		sources.tui.keypress(),
-		neu.filter((key: neu.tui.Key) => key.name === "c" && key.ctrl),
+		neu.filter(
+			(key: neu.tui.Key) => (key.name === "c" && key.ctrl) || key.name === "q",
+		),
 		neu.each(() => {
 			process.exit(0);
 		}),
