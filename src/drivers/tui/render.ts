@@ -33,6 +33,57 @@ const availableColors = [
 	"grey",
 ] as const;
 
+const borders = {
+	line: {
+		topLeft: "┌",
+		topRight: "┐",
+		bottomLeft: "└",
+		bottomRight: "┘",
+		horizontal: "─",
+		vertical: "│",
+	},
+	lineThick: {
+		topLeft: "┏",
+		topRight: "┓",
+		bottomLeft: "┗",
+		bottomRight: "┛",
+		horizontal: "━",
+		vertical: "┃",
+	},
+	round: {
+		topLeft: "╭",
+		topRight: "╮",
+		bottomLeft: "╰",
+		bottomRight: "╯",
+		horizontal: "─",
+		vertical: "│",
+	},
+	double: {
+		topLeft: "╔",
+		topRight: "╗",
+		bottomLeft: "╚",
+		bottomRight: "╝",
+		horizontal: "═",
+		vertical: "║",
+	},
+	dashed: {
+		topLeft: "┌",
+		topRight: "┐",
+		bottomLeft: "└",
+		bottomRight: "┘",
+		horizontal: "┄",
+		vertical: "┆",
+	},
+	classic: {
+		topLeft: "+",
+		topRight: "+",
+		bottomLeft: "+",
+		bottomRight: "+",
+		horizontal: "-",
+		vertical: "|",
+	},
+} as const;
+
 export type Color = (typeof availableColors)[number] | "transparent";
 
 let Yoga: typeof import("yoga-layout");
@@ -248,6 +299,9 @@ const setProperty = (
 			yoga.setPadding(Yoga.EDGE_TOP, value);
 		} else if (key === "paddingBottom") {
 			yoga.setPadding(Yoga.EDGE_BOTTOM, value);
+		} else if (key === "border") {
+			yoga.setBorder(Yoga.EDGE_ALL, 1);
+			node.props!.border = value;
 		} else {
 			const method = `set${key[0].toUpperCase()}${key.slice(1)}`;
 
@@ -482,7 +536,8 @@ export const getComputedStyle = (node: TuiNode) => {
 	let style: Record<string, any> = {};
 
 	if (node.parent) {
-		style = { ...getComputedStyle(node.parent) };
+		const { border = null, ...parentStyle } = getComputedStyle(node.parent);
+		style = parentStyle;
 	}
 
 	if (node.props?.color) {
@@ -519,6 +574,14 @@ export const getComputedStyle = (node: TuiNode) => {
 
 	if (node.props?.overflow) {
 		style.overflow = node.props.overflow;
+	}
+
+	if (node.props?.border) {
+		style.border = node.props.border;
+	}
+
+	if (node.props?.borderColor) {
+		style.borderColor = node.props.borderColor;
 	}
 
 	return style;
@@ -653,6 +716,138 @@ export const output = (
 			}
 		}
 
+		if (style.border) {
+			const isTopOverflow = bounds.top < overflowBounds.top;
+			const isBottomOverflow =
+				bounds.top + bounds.height > overflowBounds.top + overflowBounds.height;
+			const isLeftOverflow = bounds.left < overflowBounds.left;
+			const isRightOverflow =
+				bounds.left + bounds.width > overflowBounds.left + overflowBounds.width;
+
+			if (!isTopOverflow && !isLeftOverflow) {
+				screen[bounds.top][bounds.left] = {
+					value: borders[style.border as keyof typeof borders].topLeft,
+					style: {
+						...style,
+						...(style.borderColor
+							? {
+									color: style.borderColor,
+								}
+							: {}),
+					},
+				};
+			}
+
+			if (!isTopOverflow && !isRightOverflow) {
+				screen[bounds.top][bounds.left + bounds.width - 1] = {
+					value: borders[style.border as keyof typeof borders].topRight,
+					style: {
+						...style,
+						...(style.borderColor
+							? {
+									color: style.borderColor,
+								}
+							: {}),
+					},
+				};
+			}
+
+			if (!isBottomOverflow && !isLeftOverflow) {
+				screen[bounds.top + bounds.height - 1][bounds.left] = {
+					value: borders[style.border as keyof typeof borders].bottomLeft,
+					style: {
+						...style,
+						...(style.borderColor
+							? {
+									color: style.borderColor,
+								}
+							: {}),
+					},
+				};
+			}
+
+			if (!isBottomOverflow && !isRightOverflow) {
+				screen[bounds.top + bounds.height - 1][bounds.left + bounds.width - 1] =
+					{
+						value: borders[style.border as keyof typeof borders].bottomRight,
+						style: {
+							...style,
+							...(style.borderColor
+								? {
+										color: style.borderColor,
+									}
+								: {}),
+						},
+					};
+			}
+
+			for (
+				let x = Math.max(bounds.left + 1, overflowBounds.left);
+				x < bounds.left + bounds.width - 1;
+				x++
+			) {
+				if (!isTopOverflow) {
+					screen[bounds.top][x] = {
+						value: borders[style.border as keyof typeof borders].horizontal,
+						style: {
+							...style,
+							...(style.borderColor
+								? {
+										color: style.borderColor,
+									}
+								: {}),
+						},
+					};
+				}
+				if (!isBottomOverflow) {
+					screen[bounds.top + bounds.height - 1][x] = {
+						value: borders[style.border as keyof typeof borders].horizontal,
+						style: {
+							...style,
+							...(style.borderColor
+								? {
+										color: style.borderColor,
+									}
+								: {}),
+						},
+					};
+				}
+			}
+
+			for (
+				let y = Math.max(bounds.top + 1, overflowBounds.top);
+				y < bounds.top + bounds.height - 1;
+				y++
+			) {
+				if (!isLeftOverflow) {
+					screen[y][bounds.left] = {
+						value: borders[style.border as keyof typeof borders].vertical,
+						style: {
+							...style,
+							...(style.borderColor
+								? {
+										color: style.borderColor,
+									}
+								: {}),
+						},
+					};
+				}
+				if (!isRightOverflow) {
+					screen[y][bounds.left + bounds.width - 1] = {
+						value: borders[style.border as keyof typeof borders].vertical,
+						style: {
+							...style,
+							...(style.borderColor
+								? {
+										color: style.borderColor,
+									}
+								: {}),
+						},
+					};
+				}
+			}
+		}
+
 		let absolute: Array<TuiNode> = [];
 
 		for (const child of node.children) {
@@ -752,10 +947,15 @@ export const render = async (
 	stdout.write(ansi.cursorHide);
 	stdout.write(ansi.enterAlternativeScreen);
 
-	stdout.addListener("close", () => {
+	const cleanup = () => {
 		stdout.write(ansi.cursorShow);
 		stdout.write(ansi.exitAlternativeScreen);
-	});
+	};
+
+	stdout.addListener("close", cleanup);
+	process.addListener("exit", cleanup);
+	process.addListener("SIGINT", cleanup);
+	process.addListener("SIGTERM", cleanup);
 
 	const write = () => {
 		root.yoga.calculateLayout(stdout.columns, stdout.rows, Yoga.DIRECTION_LTR);

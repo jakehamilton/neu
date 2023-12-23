@@ -42,8 +42,8 @@ export const driver =
 		stdin.addListener("data", (data) => {
 			const key = parseKeypress(data);
 
-			for (const listener of keypressListeners) {
-				listener(key);
+			for (let i = 0; i < keypressListeners.length; i++) {
+				keypressListeners[i](key);
 			}
 		});
 
@@ -79,7 +79,11 @@ export const driver =
 
 				sink(Signal.Start, (type, _data) => {
 					if (type === Signal.End) {
-						keypressListeners.splice(keypressListeners.indexOf(listener), 1);
+						const index = keypressListeners.indexOf(listener);
+
+						if (index !== -1) {
+							keypressListeners.splice(index, 1);
+						}
 					}
 				});
 			},

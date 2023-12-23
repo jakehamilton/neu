@@ -1,4 +1,6 @@
 import * as neu from "~/index";
+import ansi from "ansi-escapes";
+import supportsHyperlinks from "supports-hyperlinks";
 
 export type State = {
 	focus: string;
@@ -11,7 +13,15 @@ export type Drivers = {
 };
 
 const app: neu.App<Drivers> = ({ tui, state }) => {
-	const focusable = ["", "cancel", "submit"];
+	const focusable = ["cancel", "submit"];
+
+	const exit$ = neu.pipe(
+		tui.keypress(),
+		neu.when((key: neu.tui.Key) => key.name === "c" && key.ctrl),
+		neu.tap(() => {
+			process.exit(0);
+		}),
+	);
 
 	const focus$ = neu.broadcast(
 		neu.pipe(
@@ -31,6 +41,7 @@ const app: neu.App<Drivers> = ({ tui, state }) => {
 					return (index + 1) % focusable.length;
 				}
 			}, 0),
+			neu.start(0),
 			neu.map((index: number) => focusable[index]),
 			state.write("focus"),
 		),
@@ -41,10 +52,10 @@ const app: neu.App<Drivers> = ({ tui, state }) => {
 		neu.map((focus) =>
 			focus === "cancel"
 				? {
-						color: "white",
-						background: "red",
+						color: "red",
+						borderColor: "red",
 					}
-				: { color: "white", background: "transparent" },
+				: { color: "white", borderColor: "white" },
 		),
 	);
 
@@ -53,14 +64,15 @@ const app: neu.App<Drivers> = ({ tui, state }) => {
 		neu.map((focus) =>
 			focus === "submit"
 				? {
-						color: "black",
-						background: "green",
+						color: "green",
+						borderColor: "green",
 					}
-				: { color: "white", background: "transparent" },
+				: { color: "white", borderColor: "white" },
 		),
 	);
 
 	return {
+		effect: exit$,
 		tui: neu.of(
 			neu.tui.box(
 				{
@@ -77,7 +89,14 @@ const app: neu.App<Drivers> = ({ tui, state }) => {
 							paddingRight: 2,
 							background: "blackBright",
 						},
-						[neu.tui.text("WELCOME TO"), neu.tui.text(" GitHub")],
+						[
+							neu.tui.text("WELCOME TO"),
+							neu.tui.text(
+								supportsHyperlinks.supportsHyperlink(process.stdout)
+									? ansi.link(" GitHub", "https://github.com/jakehamilton/neu")
+									: " jakehamilton/neu",
+							),
+						],
 					),
 					neu.tui.box(
 						{
@@ -105,13 +124,15 @@ const app: neu.App<Drivers> = ({ tui, state }) => {
 							neu.tui.box(
 								{
 									flexDirection: "row",
-									paddingTop: 2,
+									alignItems: "center",
+									overflow: "hidden",
 								},
 								[
 									neu.tui.box(
 										{
 											paddingLeft: 1,
 											paddingRight: 1,
+											border: "round",
 											style: cancelStyle$,
 										},
 										"Cancel",
@@ -121,6 +142,7 @@ const app: neu.App<Drivers> = ({ tui, state }) => {
 											marginLeft: 2,
 											paddingLeft: 1,
 											paddingRight: 1,
+											border: "round",
 											style: submitStyle$,
 										},
 										"Submit",

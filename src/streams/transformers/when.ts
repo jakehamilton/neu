@@ -18,9 +18,6 @@ export const when =
 				sink(Signal.End, data);
 			} else if (fn(data)) {
 				sink(Signal.Data, data);
-			} else {
-				talkback?.(Signal.End, undefined);
-				sink(Signal.End, undefined);
 			}
 		});
 	};
