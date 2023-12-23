@@ -64,6 +64,9 @@ export const driver =
 					}
 				});
 
+				const listeners = nodeListeners.get(id) ?? [];
+				nodeListeners.set(id, listeners.concat(listener));
+
 				if (nodes.has(id)) {
 					listener(nodes.get(id)!);
 				}

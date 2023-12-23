@@ -536,8 +536,39 @@ export const getComputedStyle = (node: TuiNode) => {
 	let style: Record<string, any> = {};
 
 	if (node.parent) {
-		const { border = null, ...parentStyle } = getComputedStyle(node.parent);
-		style = parentStyle;
+		const parentStyle = getComputedStyle(node.parent);
+
+		if (parentStyle.color) {
+			style.color = parentStyle.color;
+		}
+
+		if (parentStyle.background) {
+			style.background = parentStyle.background;
+		}
+
+		if (parentStyle.bold) {
+			style.bold = true;
+		}
+
+		if (parentStyle.dim) {
+			style.dim = true;
+		}
+
+		if (parentStyle.italic) {
+			style.italic = true;
+		}
+
+		if (parentStyle.underline) {
+			style.underline = true;
+		}
+
+		if (parentStyle.strikethrough) {
+			style.strikethrough = true;
+		}
+
+		if (parentStyle.textWrap) {
+			style.textWrap = parentStyle.textWrap;
+		}
 	}
 
 	if (node.props?.color) {
@@ -699,14 +730,16 @@ export const output = (
 			let y = Math.max(bounds.top, overflowBounds.top);
 			y < bounds.top + bounds.height &&
 			y >= overflowBounds.top &&
-			y < overflowBounds.top + overflowBounds.height;
+			y < overflowBounds.top + overflowBounds.height &&
+			y < screen.length;
 			y++
 		) {
 			for (
 				let x = Math.max(bounds.left, overflowBounds.left);
 				x < bounds.left + bounds.width &&
 				x >= overflowBounds.left &&
-				x < overflowBounds.left + overflowBounds.width;
+				x < overflowBounds.left + overflowBounds.width &&
+				x < screen[y].length;
 				x++
 			) {
 				screen[y][x] = {
@@ -886,7 +919,8 @@ export const output = (
 		for (let y = 0; y < lines.length; y++) {
 			if (
 				y + bounds.top < overflowBounds.top ||
-				y + bounds.top >= overflowBounds.top + overflowBounds.height
+				y + bounds.top >= overflowBounds.top + overflowBounds.height ||
+				y + bounds.top >= screen.length
 			) {
 				continue;
 			}
@@ -899,7 +933,8 @@ export const output = (
 			for (let x = 0; x < line.length; x++) {
 				if (
 					x + bounds.left < overflowBounds.left ||
-					x + bounds.left >= overflowBounds.left + overflowBounds.width
+					x + bounds.left >= overflowBounds.left + overflowBounds.width ||
+					x + bounds.left >= screen[y + bounds.top].length
 				) {
 					continue;
 				}
@@ -944,8 +979,10 @@ export const render = async (
 	let isFirstWrite = true;
 	let debug = false;
 
-	stdout.write(ansi.cursorHide);
-	stdout.write(ansi.enterAlternativeScreen);
+	if (!debug) {
+		stdout.write(ansi.cursorHide);
+		stdout.write(ansi.enterAlternativeScreen);
+	}
 
 	const cleanup = () => {
 		stdout.write(ansi.cursorShow);
