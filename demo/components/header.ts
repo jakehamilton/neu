@@ -47,6 +47,7 @@ const HeaderRightClass = css({
 export const Header: neu.App<Drivers, { dom: neu.dom.VNodeStream }> = ({
 	dom,
 	state,
+	history,
 	theme,
 }) => {
 	const isScrolled$ = neu.pipe(
@@ -99,7 +100,7 @@ export const Header: neu.App<Drivers, { dom: neu.dom.VNodeStream }> = ({
 						},
 						[
 							Github(
-								{ dom, state, theme },
+								{ dom, state, history, theme },
 								{
 									width: 24,
 									height: 24,
