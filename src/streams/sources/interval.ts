@@ -1,7 +1,7 @@
 import { Signal, Source } from "~/streams/interface";
 
 export const interval =
-	(period: number): Source<number> =>
+	(period: number, immediate = true): Source<number> =>
 	(type, sink) => {
 		if (type !== Signal.Start) return;
 
@@ -13,6 +13,10 @@ export const interval =
 				clearInterval(id);
 			}
 		});
+
+		if (immediate) {
+			sink(Signal.Data, i++);
+		}
 
 		id = setInterval(() => {
 			sink(Signal.Data, i++);

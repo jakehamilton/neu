@@ -8,7 +8,7 @@ import stringWidth from "string-width";
 import widestLine from "widest-line";
 
 import { Signal, Source } from "~/streams/interface";
-import { Dispose } from "~/streams/sinks/subscribe";
+import { Dispose, subscribe } from "~/streams/sinks/subscribe";
 
 import { VNode, VNodeStream } from "./elements";
 
@@ -33,10 +33,11 @@ const availableColors = [
 	"grey",
 ] as const;
 
+export type Color = (typeof availableColors)[number] | "transparent";
+
 let Yoga: typeof import("yoga-layout");
 
-const clone = (x: any) => JSON.parse(JSON.stringify(x));
-
+// TODO: Support arbitrary hex colors.
 const hexToRgb = (hex: string) => {
 	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	return result
@@ -48,7 +49,7 @@ const hexToRgb = (hex: string) => {
 		: null;
 };
 
-type TuiNode = {
+export type TuiNode = {
 	type: string;
 	parent: TuiNode | null;
 	props?: Record<string, any>;
@@ -56,10 +57,217 @@ type TuiNode = {
 	children: Array<TuiNode | string | null>;
 };
 
+const setProperty = (
+	node: TuiNode,
+	key: string,
+	value: any,
+	write: () => void,
+): Array<Dispose> => {
+	const unsubscribes: Array<Dispose> = [];
+
+	if (key === "style" && typeof value === "function") {
+		unsubscribes.push(
+			subscribe((style: Record<string, any>) => {
+				for (const [styleKey, styleValue] of Object.entries(style)) {
+					setProperty(node, styleKey, styleValue, write);
+				}
+				write();
+			})(value),
+		);
+	} else if (typeof value === "function") {
+		unsubscribes.push(
+			subscribe((value) => {
+				setProperty(node, key, value, write);
+				write();
+			})(value),
+		);
+	} else {
+		const yoga = node.yoga;
+
+		node.props![key] = value;
+
+		if (key === "color" || key === "background") {
+			if (value === "transparent") {
+				delete node.props![key];
+			} else if (!availableColors.includes(value)) {
+				throw new Error(
+					`Invalid color "${value}", expected one of: ${availableColors.join(
+						", ",
+					)}`,
+				);
+			}
+		} else if (key === "width" && value === "auto") {
+			yoga.setWidthAuto();
+		} else if (key === "height" && value === "auto") {
+			yoga.setHeightAuto();
+		} else if (key === "overflow") {
+			if (value === "hidden") {
+				yoga.setOverflow(Yoga.OVERFLOW_HIDDEN);
+			} else if (value === "scroll") {
+				yoga.setOverflow(Yoga.OVERFLOW_SCROLL);
+			} else if (value === "visible") {
+				yoga.setOverflow(Yoga.OVERFLOW_VISIBLE);
+			}
+		} else if (key === "flexDirection") {
+			if (value === "row") {
+				yoga.setFlexDirection(Yoga.FLEX_DIRECTION_ROW);
+			} else if (value === "column") {
+				yoga.setFlexDirection(Yoga.FLEX_DIRECTION_COLUMN);
+			} else if (value === "rowReverse") {
+				yoga.setFlexDirection(Yoga.FLEX_DIRECTION_ROW_REVERSE);
+			} else if (value === "columnReverse") {
+				yoga.setFlexDirection(Yoga.FLEX_DIRECTION_COLUMN_REVERSE);
+			}
+		} else if (key === "alignSelf") {
+			if (value === "auto") {
+				yoga.setAlignSelf(Yoga.ALIGN_AUTO);
+			} else if (value === "flex-start") {
+				yoga.setAlignSelf(Yoga.ALIGN_FLEX_START);
+			} else if (value === "center") {
+				yoga.setAlignSelf(Yoga.ALIGN_CENTER);
+			} else if (value === "flex-end") {
+				yoga.setAlignSelf(Yoga.ALIGN_FLEX_END);
+			} else if (value === "stretch") {
+				yoga.setAlignSelf(Yoga.ALIGN_STRETCH);
+			} else if (value === "baseline") {
+				yoga.setAlignSelf(Yoga.ALIGN_BASELINE);
+			} else if (value === "space-between") {
+				yoga.setAlignSelf(Yoga.ALIGN_SPACE_BETWEEN);
+			} else if (value === "space-around") {
+				yoga.setAlignSelf(Yoga.ALIGN_SPACE_AROUND);
+			}
+		} else if (key === "alignContent") {
+			if (value === "auto") {
+				yoga.setAlignContent(Yoga.ALIGN_AUTO);
+			} else if (value === "flex-start") {
+				yoga.setAlignContent(Yoga.ALIGN_FLEX_START);
+			} else if (value === "center") {
+				yoga.setAlignContent(Yoga.ALIGN_CENTER);
+			} else if (value === "flex-end") {
+				yoga.setAlignContent(Yoga.ALIGN_FLEX_END);
+			} else if (value === "stretch") {
+				yoga.setAlignContent(Yoga.ALIGN_STRETCH);
+			} else if (value === "baseline") {
+				yoga.setAlignContent(Yoga.ALIGN_BASELINE);
+			} else if (value === "space-between") {
+				yoga.setAlignContent(Yoga.ALIGN_SPACE_BETWEEN);
+			} else if (value === "space-around") {
+				yoga.setAlignContent(Yoga.ALIGN_SPACE_AROUND);
+			}
+		} else if (key === "alignItems") {
+			if (value === "auto") {
+				yoga.setAlignItems(Yoga.ALIGN_AUTO);
+			} else if (value === "flex-start") {
+				yoga.setAlignItems(Yoga.ALIGN_FLEX_START);
+			} else if (value === "center") {
+				yoga.setAlignItems(Yoga.ALIGN_CENTER);
+			} else if (value === "flex-end") {
+				yoga.setAlignItems(Yoga.ALIGN_FLEX_END);
+			} else if (value === "stretch") {
+				yoga.setAlignItems(Yoga.ALIGN_STRETCH);
+			} else if (value === "baseline") {
+				yoga.setAlignItems(Yoga.ALIGN_BASELINE);
+			} else if (value === "space-between") {
+				yoga.setAlignItems(Yoga.ALIGN_SPACE_BETWEEN);
+			} else if (value === "space-around") {
+				yoga.setAlignItems(Yoga.ALIGN_SPACE_AROUND);
+			}
+		} else if (key === "justifyContent") {
+			if (value === "flex-start") {
+				yoga.setJustifyContent(Yoga.JUSTIFY_FLEX_START);
+			} else if (value === "center") {
+				yoga.setJustifyContent(Yoga.JUSTIFY_CENTER);
+			} else if (value === "flex-end") {
+				yoga.setJustifyContent(Yoga.JUSTIFY_FLEX_END);
+			} else if (value === "space-evenly") {
+				yoga.setJustifyContent(Yoga.JUSTIFY_SPACE_EVENLY);
+			} else if (value === "space-between") {
+				yoga.setJustifyContent(Yoga.JUSTIFY_SPACE_BETWEEN);
+			} else if (value === "space-around") {
+				yoga.setJustifyContent(Yoga.JUSTIFY_SPACE_AROUND);
+			}
+		} else if (key === "position") {
+			if (value === "absolute") {
+				yoga.setPositionType(Yoga.POSITION_TYPE_ABSOLUTE);
+			} else if (value === "relative") {
+				yoga.setPositionType(Yoga.POSITION_TYPE_RELATIVE);
+			}
+		} else if (key === "top") {
+			if (typeof value === "string") {
+				yoga.setPositionPercent(
+					Yoga.EDGE_TOP,
+					Number(value.substring(0, value.length - 1)),
+				);
+			} else {
+				yoga.setPosition(Yoga.EDGE_TOP, value);
+			}
+		} else if (key === "left") {
+			if (typeof value === "string") {
+				yoga.setPositionPercent(
+					Yoga.EDGE_LEFT,
+					Number(value.substring(0, value.length - 1)),
+				);
+			} else {
+				yoga.setPosition(Yoga.EDGE_LEFT, value);
+			}
+		} else if (key === "right") {
+			if (typeof value === "string") {
+				yoga.setPositionPercent(
+					Yoga.EDGE_RIGHT,
+					Number(value.substring(0, value.length - 1)),
+				);
+			} else {
+				yoga.setPosition(Yoga.EDGE_RIGHT, value);
+			}
+		} else if (key === "bottom") {
+			if (typeof value === "string") {
+				yoga.setPositionPercent(
+					Yoga.EDGE_BOTTOM,
+					Number(value.substring(0, value.length - 1)),
+				);
+			} else {
+				yoga.setPosition(Yoga.EDGE_BOTTOM, value);
+			}
+		} else if (key === "margin") {
+			yoga.setMargin(Yoga.EDGE_ALL, value);
+		} else if (key === "marginLeft") {
+			yoga.setMargin(Yoga.EDGE_LEFT, value);
+		} else if (key === "marginRight") {
+			yoga.setMargin(Yoga.EDGE_RIGHT, value);
+		} else if (key === "marginTop") {
+			yoga.setMargin(Yoga.EDGE_TOP, value);
+		} else if (key === "marginBottom") {
+			yoga.setMargin(Yoga.EDGE_BOTTOM, value);
+		} else if (key === "padding") {
+			yoga.setPadding(Yoga.EDGE_ALL, value);
+		} else if (key === "paddingLeft") {
+			yoga.setPadding(Yoga.EDGE_LEFT, value);
+		} else if (key === "paddingRight") {
+			yoga.setPadding(Yoga.EDGE_RIGHT, value);
+		} else if (key === "paddingTop") {
+			yoga.setPadding(Yoga.EDGE_TOP, value);
+		} else if (key === "paddingBottom") {
+			yoga.setPadding(Yoga.EDGE_BOTTOM, value);
+		} else {
+			const method = `set${key[0].toUpperCase()}${key.slice(1)}`;
+
+			if (yoga[method as keyof typeof yoga]) {
+				const args = [].concat(value);
+
+				// @ts-expect-error
+				yoga[method as keyof typeof yoga](...args);
+			}
+		}
+	}
+
+	return unsubscribes;
+};
+
 export const create = (
 	parent: TuiNode,
 	node: VNode,
 	write: () => void,
+	register: (id: string, node: TuiNode) => Dispose,
 ): {
 	element: TuiNode | string | null;
 	unsubscribes: Array<Dispose>;
@@ -95,201 +303,36 @@ export const create = (
 			},
 		);
 
-		parent.yoga.insertChild(element.yoga, parent.yoga.getChildCount());
+		// parent.yoga.insertChild(element.yoga, parent.yoga.getChildCount());
 
 		return { element, unsubscribes: [] };
 	}
 
 	const yoga = Yoga.Node.create();
 
-	const props = node.props ?? {};
-
-	props.textWrap = props.textWrap ?? true;
-
-	const unsubscribes: Array<Dispose> = [];
-
-	for (const prop in props) {
-		if (prop === "color" || prop === "background") {
-			const value = props[prop];
-
-			if (!availableColors.includes(value)) {
-				throw new Error(
-					`Invalid color "${value}", expected one of: ${availableColors.join(
-						", ",
-					)}`,
-				);
-			}
-		} else if (prop === "width" && props[prop] === "auto") {
-			yoga.setWidthAuto();
-		} else if (prop === "height" && props[prop] === "auto") {
-			yoga.setHeightAuto();
-		} else if (prop === "overflow") {
-			if (props[prop] === "hidden") {
-				yoga.setOverflow(Yoga.OVERFLOW_HIDDEN);
-			} else if (props[prop] === "scroll") {
-				yoga.setOverflow(Yoga.OVERFLOW_SCROLL);
-			} else if (props[prop] === "visible") {
-				yoga.setOverflow(Yoga.OVERFLOW_VISIBLE);
-			}
-		} else if (prop === "flexDirection") {
-			if (props[prop] === "row") {
-				yoga.setFlexDirection(Yoga.FLEX_DIRECTION_ROW);
-			} else if (props[prop] === "column") {
-				yoga.setFlexDirection(Yoga.FLEX_DIRECTION_COLUMN);
-			} else if (props[prop] === "rowReverse") {
-				yoga.setFlexDirection(Yoga.FLEX_DIRECTION_ROW_REVERSE);
-			} else if (props[prop] === "columnReverse") {
-				yoga.setFlexDirection(Yoga.FLEX_DIRECTION_COLUMN_REVERSE);
-			}
-		} else if (prop === "alignSelf") {
-			if (props[prop] === "auto") {
-				yoga.setAlignSelf(Yoga.ALIGN_AUTO);
-			} else if (props[prop] === "flex-start") {
-				yoga.setAlignSelf(Yoga.ALIGN_FLEX_START);
-			} else if (props[prop] === "center") {
-				yoga.setAlignSelf(Yoga.ALIGN_CENTER);
-			} else if (props[prop] === "flex-end") {
-				yoga.setAlignSelf(Yoga.ALIGN_FLEX_END);
-			} else if (props[prop] === "stretch") {
-				yoga.setAlignSelf(Yoga.ALIGN_STRETCH);
-			} else if (props[prop] === "baseline") {
-				yoga.setAlignSelf(Yoga.ALIGN_BASELINE);
-			} else if (props[prop] === "space-between") {
-				yoga.setAlignSelf(Yoga.ALIGN_SPACE_BETWEEN);
-			} else if (props[prop] === "space-around") {
-				yoga.setAlignSelf(Yoga.ALIGN_SPACE_AROUND);
-			}
-		} else if (prop === "alignContent") {
-			if (props[prop] === "auto") {
-				yoga.setAlignContent(Yoga.ALIGN_AUTO);
-			} else if (props[prop] === "flex-start") {
-				yoga.setAlignContent(Yoga.ALIGN_FLEX_START);
-			} else if (props[prop] === "center") {
-				yoga.setAlignContent(Yoga.ALIGN_CENTER);
-			} else if (props[prop] === "flex-end") {
-				yoga.setAlignContent(Yoga.ALIGN_FLEX_END);
-			} else if (props[prop] === "stretch") {
-				yoga.setAlignContent(Yoga.ALIGN_STRETCH);
-			} else if (props[prop] === "baseline") {
-				yoga.setAlignContent(Yoga.ALIGN_BASELINE);
-			} else if (props[prop] === "space-between") {
-				yoga.setAlignContent(Yoga.ALIGN_SPACE_BETWEEN);
-			} else if (props[prop] === "space-around") {
-				yoga.setAlignContent(Yoga.ALIGN_SPACE_AROUND);
-			}
-		} else if (prop === "alignItems") {
-			if (props[prop] === "auto") {
-				yoga.setAlignItems(Yoga.ALIGN_AUTO);
-			} else if (props[prop] === "flex-start") {
-				yoga.setAlignItems(Yoga.ALIGN_FLEX_START);
-			} else if (props[prop] === "center") {
-				yoga.setAlignItems(Yoga.ALIGN_CENTER);
-			} else if (props[prop] === "flex-end") {
-				yoga.setAlignItems(Yoga.ALIGN_FLEX_END);
-			} else if (props[prop] === "stretch") {
-				yoga.setAlignItems(Yoga.ALIGN_STRETCH);
-			} else if (props[prop] === "baseline") {
-				yoga.setAlignItems(Yoga.ALIGN_BASELINE);
-			} else if (props[prop] === "space-between") {
-				yoga.setAlignItems(Yoga.ALIGN_SPACE_BETWEEN);
-			} else if (props[prop] === "space-around") {
-				yoga.setAlignItems(Yoga.ALIGN_SPACE_AROUND);
-			}
-		} else if (prop === "justifyContent") {
-			if (props[prop] === "flex-start") {
-				yoga.setJustifyContent(Yoga.JUSTIFY_FLEX_START);
-			} else if (props[prop] === "center") {
-				yoga.setJustifyContent(Yoga.JUSTIFY_CENTER);
-			} else if (props[prop] === "flex-end") {
-				yoga.setJustifyContent(Yoga.JUSTIFY_FLEX_END);
-			} else if (props[prop] === "space-evenly") {
-				yoga.setJustifyContent(Yoga.JUSTIFY_SPACE_EVENLY);
-			} else if (props[prop] === "space-between") {
-				yoga.setJustifyContent(Yoga.JUSTIFY_SPACE_BETWEEN);
-			} else if (props[prop] === "space-around") {
-				yoga.setJustifyContent(Yoga.JUSTIFY_SPACE_AROUND);
-			}
-		} else if (prop === "position") {
-			if (props[prop] === "absolute") {
-				yoga.setPositionType(Yoga.POSITION_TYPE_ABSOLUTE);
-			} else if (props[prop] === "relative") {
-				yoga.setPositionType(Yoga.POSITION_TYPE_RELATIVE);
-			}
-		} else if (prop === "top") {
-			if (typeof props[prop] === "string") {
-				yoga.setPositionPercent(
-					Yoga.EDGE_TOP,
-					Number(props[prop].substring(0, props[prop].length - 1)),
-				);
-			} else {
-				yoga.setPosition(Yoga.EDGE_TOP, props[prop]);
-			}
-		} else if (prop === "left") {
-			if (typeof props[prop] === "string") {
-				yoga.setPositionPercent(
-					Yoga.EDGE_LEFT,
-					Number(props[prop].substring(0, props[prop].length - 1)),
-				);
-			} else {
-				yoga.setPosition(Yoga.EDGE_LEFT, props[prop]);
-			}
-		} else if (prop === "right") {
-			if (typeof props[prop] === "string") {
-				yoga.setPositionPercent(
-					Yoga.EDGE_RIGHT,
-					Number(props[prop].substring(0, props[prop].length - 1)),
-				);
-			} else {
-				yoga.setPosition(Yoga.EDGE_RIGHT, props[prop]);
-			}
-		} else if (prop === "bottom") {
-			if (typeof props[prop] === "string") {
-				yoga.setPositionPercent(
-					Yoga.EDGE_BOTTOM,
-					Number(props[prop].substring(0, props[prop].length - 1)),
-				);
-			} else {
-				yoga.setPosition(Yoga.EDGE_BOTTOM, props[prop]);
-			}
-		} else if (prop === "margin") {
-			yoga.setMargin(Yoga.EDGE_ALL, props[prop]);
-		} else if (prop === "marginLeft") {
-			yoga.setMargin(Yoga.EDGE_LEFT, props[prop]);
-		} else if (prop === "marginRight") {
-			yoga.setMargin(Yoga.EDGE_RIGHT, props[prop]);
-		} else if (prop === "marginTop") {
-			yoga.setMargin(Yoga.EDGE_TOP, props[prop]);
-		} else if (prop === "marginBottom") {
-			yoga.setMargin(Yoga.EDGE_BOTTOM, props[prop]);
-		} else if (prop === "padding") {
-			yoga.setPadding(Yoga.EDGE_ALL, props[prop]);
-		} else if (prop === "paddingLeft") {
-			yoga.setPadding(Yoga.EDGE_LEFT, props[prop]);
-		} else if (prop === "paddingRight") {
-			yoga.setPadding(Yoga.EDGE_RIGHT, props[prop]);
-		} else if (prop === "paddingTop") {
-			yoga.setPadding(Yoga.EDGE_TOP, props[prop]);
-		} else if (prop === "paddingBottom") {
-			yoga.setPadding(Yoga.EDGE_BOTTOM, props[prop]);
-		} else {
-			const method = `set${prop[0].toUpperCase()}${prop.slice(1)}`;
-
-			if (yoga[method as keyof typeof yoga]) {
-				const args = [].concat(props[prop]);
-
-				// @ts-expect-error
-				yoga[method as keyof typeof yoga](...args);
-			}
-		}
-	}
-
 	const element: TuiNode = {
 		type: node.type,
 		parent,
 		yoga,
-		props,
+		props: {
+			textWrap: true,
+		},
 		children: [],
 	};
+
+	const props = node.props ?? {};
+
+	const unsubscribes: Array<Dispose> = [];
+
+	for (const prop in props) {
+		const result = setProperty(element, prop, props[prop], write);
+
+		if (result.length) {
+			unsubscribes.push(...result);
+		}
+	}
+
+	element.yoga = yoga;
 
 	let children: Array<VNode | VNodeStream | { tui: VNodeStream }>;
 
@@ -303,21 +346,76 @@ export const create = (
 		children = [];
 	}
 
-	parent.yoga.insertChild(element.yoga, parent.yoga.getChildCount());
-
-	for (let child of children) {
+	for (let i = 0; i < children.length; i++) {
+		let child = children[i];
 		if (typeof child === "object" && child !== null && "tui" in child) {
 			child = child.tui;
 		}
 
 		if (typeof child === "function") {
-			// TODO: Handle streams
+			let childElement: TuiNode | string | null = null;
+			let childUnsubscribes: Array<Dispose> = [];
+
+			const unsubscribe = subscribe<VNode, any>((value) => {
+				const result = create(element, value, write, register);
+
+				for (const unsubscribe of childUnsubscribes) {
+					unsubscribe();
+				}
+
+				if (typeof childElement !== "string" && childElement !== null) {
+					element.yoga.removeChild(childElement.yoga);
+					childElement.yoga.freeRecursive();
+				}
+
+				if (result.element && typeof result.element !== "string") {
+					element.yoga.insertChild(result.element.yoga, i);
+
+					if (result.element.props?.id) {
+						const id = result.element.props.id;
+
+						unsubscribes.push(register(id, result.element));
+					}
+				}
+
+				element.children[i] = result.element;
+
+				childElement = result.element;
+				childUnsubscribes = result.unsubscribes;
+
+				write();
+			})(child);
+
+			unsubscribes.push(() => {
+				for (const unsubscribe of childUnsubscribes) {
+					unsubscribe();
+				}
+
+				unsubscribe();
+
+				if (typeof childElement !== "string" && childElement !== null) {
+					element.yoga.removeChild(childElement.yoga);
+					childElement.yoga.freeRecursive();
+				}
+			});
 		} else {
-			const result = create(element, child, write);
+			const result = create(element, child, write, register);
 
-			element.children.push(result.element);
+			if (result.element) {
+				if (typeof result.element !== "string") {
+					element.yoga.insertChild(result.element.yoga, i);
 
-			unsubscribes.push(...result.unsubscribes);
+					if (result.element.props?.id) {
+						const id = result.element.props.id;
+
+						unsubscribes.push(register(id, result.element));
+					}
+				}
+
+				element.children[i] = result.element;
+
+				unsubscribes.push(...result.unsubscribes);
+			}
 		}
 	}
 
@@ -632,6 +730,7 @@ export const render = async (
 	stdin: NodeJS.ReadStream,
 	stdout: NodeJS.WriteStream,
 	source: Source<any>,
+	register: (id: string, node: TuiNode) => Dispose,
 ) => {
 	Yoga = await loadYoga();
 
@@ -650,9 +749,11 @@ export const render = async (
 	let isFirstWrite = true;
 	let debug = false;
 
+	stdout.write(ansi.cursorHide);
 	stdout.write(ansi.enterAlternativeScreen);
 
 	stdout.addListener("close", () => {
+		stdout.write(ansi.cursorShow);
 		stdout.write(ansi.exitAlternativeScreen);
 	});
 
@@ -673,11 +774,9 @@ export const render = async (
 
 		// NOTE: Without this, resizing does not properly rerender the output at the beginning of the screen.
 		stdout.write(ansi.cursorTo(0, 0));
-		stdout.write("");
 	};
 
 	stdout.addListener("resize", () => {
-		// console.log("resize", stdout.columns, stdout.rows);
 		root.yoga.setWidth(stdout.columns);
 		root.yoga.setHeight(stdout.rows);
 
@@ -699,7 +798,11 @@ export const render = async (
 
 			root.children = [];
 
-			const result = create(root, data, write);
+			const result = create(root, data, write, register);
+
+			if (result.element && typeof result.element !== "string") {
+				root.yoga.insertChild(result.element.yoga, 0);
+			}
 
 			unsubscribes = result.unsubscribes;
 			root.children = [result.element];

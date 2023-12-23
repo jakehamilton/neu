@@ -2,6 +2,7 @@ export * as dom from "~/drivers/dom";
 export * as state from "~/drivers/state";
 export * as history from "~/drivers/history";
 export * as tui from "~/drivers/tui";
+export * as effect from "~/drivers/effect";
 
 export * from "~/lifecycle/run";
 
