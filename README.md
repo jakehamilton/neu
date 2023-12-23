@@ -1,3 +1,7 @@
+> Development has moved to [@littlethings/neu](https://github.com/jakehamilton/littlethings/tree/main/packages/neu).
+
+---
+
 # Neu
 
 > Welcome to The Neu Web.
