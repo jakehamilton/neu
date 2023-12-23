@@ -61,7 +61,6 @@ const app: neu.App<Drivers> = (sources) => {
 			const contentLayout = content.yoga.getComputedLayout();
 
 			if (size.rows >= contentLayout.height) return 0;
-			if (scroll + 1 > size.rows) return scroll;
 
 			const difference = contentLayout.height - size.rows;
 
